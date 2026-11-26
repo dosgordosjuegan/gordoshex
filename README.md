@@ -6,15 +6,15 @@ Repository: [dosgordosjuegan/gordoshex](https://github.com/dosgordosjuegan/gordo
 
 The first tool will calculate line of sight and lattice range. Memoir '44 is the first planned game-specific ruleset; its rules will be researched in a later milestone. The interface will support English and Spanish, desktop and mobile browsers, and deployment to GitHub Pages. This is a focused calculator, not a general tabletop simulator.
 
-## Current status: reviewed M0 specification
+## Current status: M1 exact geometry engine
 
-This repository defines reviewed requirements and exact mathematical contracts. P1–P9 are approved with resource-limit and visibility-result clarifications; P10 is approved in principle with its complete schema deferred to M2. There is no application to run yet.
+M1 implements the reviewed M0 mathematical contracts as a standalone TypeScript library with zero runtime dependencies. Exact bigint/rational clipping, complete reference enumeration, canonical edges and simultaneous events are implemented and independently tested. Board state, game rules and the browser application remain future milestones. P1–P9 retain their approved semantics; the complete P10 schema remains deferred to M2.
 
-| Document | Contents |
-| --- | --- |
-| [Specification](docs/specification.md) | Scope, architecture, board model, ruleset policies, decision register and milestone gates |
-| [Geometry](docs/geometry.md) | Exact affine coordinates, rational clipping, complete enumeration, shared edges and simultaneous events |
-| [Testing](docs/testing.md) | Independently checkable coordinate fixtures, mathematical properties and ruleset-specific tests |
+| Document                               | Contents                                                                                                |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| [Specification](docs/specification.md) | Scope, architecture, board model, ruleset policies, decision register and milestone gates               |
+| [Geometry](docs/geometry.md)           | Exact affine coordinates, rational clipping, complete enumeration, shared edges and simultaneous events |
+| [Testing](docs/testing.md)             | Independently checkable coordinate fixtures, mathematical properties and ruleset-specific tests         |
 
 The documents distinguish agreed requirements, approved decisions, approval in principle, and open/deferred details. The specification's decision register owns approval status.
 
@@ -26,17 +26,40 @@ Boards will be arbitrary finite subsets of an infinite axial hexagonal lattice, 
 
 ## Milestones
 
-| Milestone | Reviewable outcome |
-| --- | --- |
-| M0 | Formal specification and mathematical contracts |
-| M1 | Exact geometry library and tests |
-| M2 | Board model, visibility evaluation and replaceable rulesets |
-| M3 | Interactive graphical application in English and Spanish |
-| M4 | Publication on GitHub Pages and user/developer documentation |
+| Milestone | Reviewable outcome                                           |
+| --------- | ------------------------------------------------------------ |
+| M0        | Formal specification and mathematical contracts              |
+| M1        | Exact geometry library and tests                             |
+| M2        | Board model, visibility evaluation and replaceable rulesets  |
+| M3        | Interactive graphical application in English and Spanish     |
+| M4        | Publication on GitHub Pages and user/developer documentation |
 
-M1 is ready to begin under the [reviewed decision register](docs/specification.md#decision-register-and-m1-gate). Its baseline is a supported Node.js LTS release, npm with a committed lockfile, strict TypeScript targeting ES2020 or later, Vitest, fast-check, ESLint, Prettier and GitHub Actions, with zero geometry runtime dependencies. Exact compatible versions are selected during M1; Vite initialization and frontend-framework selection are deferred.
+Use Node.js 22.13.1 and npm 10.9.2:
 
-M1 retains the conservative reference enumerator with a configurable candidate limit and bounded-cost exact preflight count. A persistent independent exact oracle, resource-boundary tests and reproducible performance baselines are required; default limits follow measurements. Memoir '44 research is deferred to M2. M3 rendering must subtract a suitable exact local display origin before floating-point conversion.
+```sh
+nvm use
+npm ci
+npm run check
+npm run benchmark
+```
+
+The public entry point is `src/index.ts`; `npm run build` produces native ESM and declarations in `dist/`.
+
+```ts
+import { axial, traceSightline } from './dist/index.js';
+
+const result = traceSightline(axial(0n, 0n), axial(2n, -1n), 1000n);
+if (result.status === 'complete') {
+  // Four cell contacts, five finite edge contacts, four simultaneous events.
+  console.log(result.cells, result.edges, result.events);
+}
+```
+
+The default per-query candidate limit is `1000n`, selected after measurements; callers can override it. Rejection returns exact count/limit diagnostics without a partial result. Geometry includes every intersected lattice cell independently of board membership.
+
+See [implementation and public API](docs/implementation.md), [performance evidence](docs/performance.md), and the [M1 completion report](docs/m1-report.md). The persistent test oracle uses independent polygon-side intersections and an independent axial search region. No optimized traversal is introduced.
+
+Memoir '44 research remains deferred to M2. M3 rendering must subtract an exact local display origin before floating-point conversion.
 
 ## License
 
