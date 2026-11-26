@@ -1,4 +1,4 @@
-name: Geometry verification
+name: Library and browser verification
 on: [push, pull_request]
 permissions:
   contents: read
@@ -14,3 +14,6 @@ jobs:
       - run: npm install --global npm@10.9.2
       - run: npm ci
       - run: npm run check
+      - run: npm run build:app
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
