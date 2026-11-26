@@ -1,0 +1,8 @@
+node_modules
+dist
+package-lock.json
+benchmarks/results.json
+# Preserve reviewed M0 contract snapshots verbatim.
+docs/geometry.md
+docs/specification.md
+docs/testing.md
