@@ -3,6 +3,7 @@ dist
 package-lock.json
 benchmarks/results.json
 benchmarks/browser-results.json
+benchmarks/automatic-results.json
 # Preserve reviewed M0 contract snapshots verbatim.
 docs/geometry.md
 docs/specification.md

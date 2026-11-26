@@ -18,7 +18,7 @@ ES2022 target, production modules and CSS as the application, then starts a loca
 preview on port 4174 and runs headless Chromium. Benchmark-only code is not shipped
 in `browser-dist/`. The runner closes its browser and server on completion.
 
-Measured **2026-11-26T22:21:25.017Z**, Linux 7.0.0-44-generic x64 on Ubuntu 26.04.1,
+Measured **2026-11-26T23:11:23.963Z**, Linux 7.0.0-44-generic x64 on Ubuntu 26.04.1,
 Intel Core i7-2600 @ 3.40 GHz, 8 logical CPUs, 16,130,686,976 bytes physical RAM.
 Node **22.13.1**, npm **10.9.2**, Vite **8.4.0**, Playwright **1.65.1**, Chromium
 **159.0.8154.6**. Viewport 1440 × 1000, device pixel ratio 1; SVG 1100 × 750.
@@ -26,7 +26,7 @@ No CPU throttling or forced garbage collection. Headless results do not establis
 physical mobile-device performance.
 
 Source snapshot SHA-256:
-`350ed36c96978f153b3618d73f0e4c33090e6502e843ef91b72bc1003a373f69`.
+`9e444f33c168adcfc74d527a9f762b2f61a0b6cc3afd1e7db6d4955d00aeb6d9`.
 The ordered source filenames, NUL separator and contents are hashed; the raw file
 lists all inputs, including production modules, CSS, benchmark code/configuration
 and lockfile. Documentation, screenshots and tests are outside that identity.
@@ -67,8 +67,8 @@ assertions are imposed in tests.
 
 | Board   | Queries | Conservative candidates total | Evaluation median / p95 ms | SVG DOM/layout median / p95 ms | Two-frame wait median / p95 ms |
 | ------- | ------: | ----------------------------: | -------------------------: | -----------------------------: | -----------------------------: |
-| 13 × 9  |     117 |                         1,757 |                49.7 / 62.2 |                    18.6 / 19.8 |                    15.4 / 18.9 |
-| 26 × 18 |     468 |                        20,525 |              345.5 / 391.8 |                   58.0 / 111.3 |                    23.0 / 41.0 |
+| 13 × 9  |     117 |                         1,757 |                47.2 / 56.4 |                    17.0 / 18.9 |                    13.6 / 19.2 |
+| 26 × 18 |     468 |                        20,525 |              326.5 / 353.3 |                    54.9 / 60.3 |                    24.6 / 29.9 |
 
 ## Limits and recommendation
 
@@ -80,16 +80,73 @@ Other shapes, observers, stacks and hardware can cost more. Existing **1000n per
 sightline** admission remains independent; a failed individual target retains its
 explicit failure, and a refused batch never silently evaluates a subset.
 
-A 468-target synchronous pass visibly exceeds a frame budget. The smallest solution
-used here is an explicit **Evaluate all targets** action, invalidating results after
-mathematical edits and avoiding recomputation during hover, orientation, zoom, pan
-or target inspection. The busy status is painted before synchronous evaluation;
-interaction can still pause for hundreds of milliseconds during a large pass.
-This limitation is shown candidly rather than hidden by stale visibility colors.
+A 468-target synchronous pass visibly exceeds a frame budget. After manual testing,
+visibility now updates automatically after a **150 ms debounce**. Mathematical
+edits immediately clear old results; superseded deferred work is canceled and
+revision-guarded. Hover, orientation, zoom, pan, target selection and inspection
+state do not trigger evaluation. Manual **Evaluate all targets** remains available.
+The debounce consolidates rapid edits; it does not reduce synchronous computation
+cost or eliminate the interaction pause during a pass. No worker, result cache or
+optimized traversal is added. Cooperative yielding between targets remains the
+smallest next change to measure if the observed pause is unacceptable.
 
-If continuous editing/live evaluation is required next, first measure cooperative
-batches that yield between targets and invalidate superseded work. That is a smaller
-change than introducing workers or redesigning the accepted exact geometry. No
-worker, speculative cache or optimized traversal is justified or added in M3A.
-The separate [geometry baseline](performance.md) was rerun because tooling/config
-fingerprints changed; mathematical production code remained unchanged.
+The separate [geometry baseline](performance.md) was rerun for the original M3A
+tooling/config changes. This usability correction changes no mathematical production
+code or geometry benchmark inputs.
+
+## Automatic input-to-result responsiveness
+
+Reproduce separately, without concurrent benchmark/test workloads:
+
+```sh
+npm run build:app
+node benchmarks/automatic-run.mjs
+```
+
+The driver serves the actual production application on local port 4176. Raw
+metadata, every sample and source identity are retained in
+[automatic-results.json](../benchmarks/automatic-results.json). It uses the same
+machine, Node/npm, pinned Chromium and 1440 × 1000 viewport as the baseline above.
+Three warmups and nine measured repetitions per board; median is the middle of
+nine, p95 nearest rank (the maximum). No timing gates are added to tests.
+
+Boards are generated through actual controls in staggered-row layout, with an
+obstacle on every 17th local row-major cell (including zero), centered observer
+`(4,4)` / `(9,9)`, target `(2,0)`, interior-only policy, and finite radius alternating
+2 and 3. Every existing target is evaluated regardless of range. Exact obstacle
+coordinates are retained. These boards differ from the pure baseline's numeric
+snapshot-order stack/edge seeding; their times should not be subtracted to infer
+isolated debounce overhead.
+
+The driver dispatches a range input event and measures:
+
+- **Pending DOM:** synchronous event completion with old verdicts removed and
+  pending styles already in the DOM.
+- **Running DOM:** observer notification after debounce and busy-state DOM update.
+- **Complete DOM:** observer notification after the complete result/inspection DOM
+  update. This includes debounce, preflight, geometry, rules, pending/running/final
+  scene updates and target inspection.
+- **Two-frame completion:** two subsequent animation-frame callbacks, a rendering
+  opportunity observation rather than a precise GPU paint measurement.
+
+Every edit must yield exactly one evaluation, the full expected cell count and no
+pending/failed cell style. Complete cell presentation and exact target-inspection
+text are SHA-256 checked per radius across repetitions. The pure baseline separately
+checks complete mathematical results. No stale result is accepted as completion.
+
+| Cells | Pending DOM median / p95 ms | Running DOM median / p95 ms | Complete DOM median / p95 ms | Two-frame completion median / p95 ms |
+| ----: | --------------------------: | --------------------------: | ---------------------------: | -----------------------------------: |
+|   117 |                 11.5 / 14.2 |               169.5 / 171.3 |                273.4 / 280.1 |                        287.1 / 292.9 |
+|   468 |                 38.4 / 40.1 |               192.1 / 200.0 |                602.0 / 626.7 |                        637.4 / 664.5 |
+
+Measured **2026-11-26T23:11:09.718Z**. Source SHA-256:
+`bb3a848ebe9d429e5179b419c09aaacf31c992c9d8fc6a0c67fc45219d297451`. The manifest hashes production
+modules/CSS, the driver, app HTML/Vite configuration and lockfile.
+
+A representative 117-cell edit completes in about 273.4 ms; 468 cells take about
+602.0 ms (637.4 ms including the two-frame observation). Pending feedback arrives
+synchronously in about 11.5 / 38.4 ms on this machine. The larger automatic update
+remains noticeable and includes a several-hundred-millisecond synchronous pause.
+The debounce prevents repeated passes while edits arrive rapidly, and revision
+guards protect publication; neither is a responsiveness guarantee. Workers,
+caching and geometry optimization remain deferred.

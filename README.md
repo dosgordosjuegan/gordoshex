@@ -44,8 +44,10 @@ npm run dev -- --host 127.0.0.1
 
 Open the URL printed by Vite, normally `http://127.0.0.1:5173`. The initial
 13 × 9 staggered board is a generic example, not an official game battlefield.
-Choose an editing/inspection mode; after editing the board, observer, policy or
-range, press **Evaluate all targets**. The target panel retains independent range,
+Choose an editing/inspection mode. Board, observer, policy and range edits
+automatically recalculate after a 150 ms debounce; **Evaluate all targets** remains
+available to refresh immediately. Drag from any cell, edge or background to pan
+(left/middle button, Space + drag, or touch); stationary clicks activate the mode. The target panel retains independent range,
 LOS, exact intervals and every blocker. Both orientations, zoom/pan, cell stacks
 and ignored shared-edge markers are supported. English is available in M3A.
 

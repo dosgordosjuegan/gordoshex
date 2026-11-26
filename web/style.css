@@ -423,3 +423,9 @@ input:disabled {
     flex-direction: column;
   }
 }
+
+#board.panning,
+#board.panning .cell,
+#board.panning .edge {
+  cursor: grabbing;
+}

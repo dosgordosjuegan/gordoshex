@@ -31,6 +31,7 @@ import {
 import { integerInput } from './limits.js';
 import { t } from './format.js';
 import { vertices, frontier } from './display.js';
+import { Recalculation, mathematicalInputsChanged } from './recalculation.js';
 const root = document.getElementById('app');
 if (!root) throw new Error('Missing app');
 shell(root);
@@ -43,7 +44,8 @@ const svg = boardSvg();
 let state = initialState(),
   batch: Batch | null = null,
   selectedEdge: EdgeId | null = null,
-  busy = false;
+  busy = false,
+  evaluations = 0;
 const interaction = bindBoard(
   svg,
   (a) => attempt(() => change(activateCell(state, a))),
@@ -75,13 +77,7 @@ function change(next: AppState, fit = false): void {
     ...frontier(next.board),
   ])
     vertices(coordinate, displayOrigin, next.orientation);
-  if (
-    next.board !== state.board ||
-    next.origin !== state.origin ||
-    next.range !== state.range ||
-    next.rulesetId !== state.rulesetId
-  )
-    batch = null;
+  const mathematicalChange = mathematicalInputsChanged(state, next);
   state = next;
   if (
     selectedEdge &&
@@ -89,7 +85,8 @@ function change(next: AppState, fit = false): void {
     !state.board.hasCell(selectedEdge.second)
   )
     selectedEdge = null;
-  render(fit);
+  if (mathematicalChange) requestEvaluation(undefined, fit);
+  else render(fit);
 }
 function render(fit = false): void {
   const focused = document.activeElement,
@@ -107,6 +104,14 @@ function render(fit = false): void {
     `${state.board.cells.length} ${t('board.count')}`;
   element('selections').textContent =
     `${t('query.observer')}: ${selectionKey(state.origin) || t('query.none')} · ${t('query.target')}: ${selectionKey(state.target) || t('query.none')}`;
+  element('batch-status').dataset.evaluations = String(evaluations);
+  element('batch-status').dataset.phase = busy
+    ? 'running'
+    : batch?.status === 'complete'
+      ? 'complete'
+      : batch?.status === 'unavailable'
+        ? 'unavailable'
+        : 'pending';
   element('batch-status').textContent = busy
     ? t('query.busy')
     : batch?.status === 'complete'
@@ -124,21 +129,36 @@ function render(fit = false): void {
   renderContents(state, mutate);
   renderEdge(state, selectedEdge, mutate);
 }
-function evaluate(): void {
-  if (busy || !input('radius').checkValidity()) return;
-  busy = true;
+const recalculation = new Recalculation(
+  evaluateBoard,
+  () => {
+    busy = true;
+    evaluations++;
+    render();
+  },
+  (result) => {
+    batch = result;
+    busy = false;
+    render();
+  },
+  (error) => {
+    batch = { status: 'unavailable', reason: 'evaluation.internal-error' };
+    busy = false;
+    attempt(() => {
+      throw error;
+    });
+    render();
+  },
+);
+function requestEvaluation(delay?: number, fit = false): void {
   batch = null;
-  render();
-  // Let the busy status paint; each complete batch is still synchronous and explicit.
-  requestAnimationFrame(() =>
-    setTimeout(() => {
-      attempt(() => {
-        batch = evaluateBoard(state);
-      });
-      busy = false;
-      render();
-    }, 0),
-  );
+  busy = false;
+  if (input('radius').checkValidity()) recalculation.request(state, delay);
+  else recalculation.cancel();
+  render(fit);
+}
+function evaluate(): void {
+  if (!busy) requestEvaluation(0);
 }
 element('generate').addEventListener('submit', (event) => {
   event.preventDefault();
@@ -182,6 +202,7 @@ function updateRange(): void {
   attempt(() => {
     const unlimited = input('unlimited').checked;
     input('radius').disabled = unlimited;
+    const wasInvalid = !input('radius').checkValidity();
     input('radius').setCustomValidity('');
     try {
       const radius = unlimited ? 0n : integerInput(input('radius').value);
@@ -191,8 +212,11 @@ function updateRange(): void {
       );
       element('evaluate').removeAttribute('disabled');
       change(next);
+      if (wasInvalid) requestEvaluation();
     } catch (error) {
+      recalculation.cancel();
       batch = null;
+      busy = false;
       input('radius').setCustomValidity(t('input.range'));
       element('evaluate').setAttribute('disabled', '');
       render();
@@ -201,6 +225,7 @@ function updateRange(): void {
   });
 }
 input('unlimited').addEventListener('change', updateRange);
+input('radius').addEventListener('input', updateRange);
 input('radius').addEventListener('change', updateRange);
 element('coordinate').addEventListener('submit', (event) => {
   event.preventDefault();
@@ -229,5 +254,4 @@ element('evaluate').addEventListener('click', evaluate);
 element('fit').addEventListener('click', () => render(true));
 element('zoom-in').addEventListener('click', () => interaction.zoom(1.2));
 element('zoom-out').addEventListener('click', () => interaction.zoom(1 / 1.2));
-render(true);
-evaluate();
+requestEvaluation(undefined, true);

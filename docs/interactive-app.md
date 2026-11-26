@@ -41,9 +41,11 @@ claim the membership or layout of an official Memoir '44 battlefield.
 Manual checks:
 
 1. Inspect `(2,0)`: distance 2, in range, blocked by `element-1` over `[1/4,3/4]`.
-2. Change presentation: membership and exact evidence stay the same. Drag empty
-   background to pan, use the wheel/zoom buttons, or focus the SVG and use arrows
-   to pan and +/− to zoom. Enter/Space activates focused cells or edge handles.
+2. Change presentation: membership and exact evidence stay the same. Drag anywhere, including over a cell or edge, to pan using the left or middle
+   button, Space + drag, or touch. Motion of at least 5 screen pixels makes the
+   gesture a drag; it cannot edit, even if it returns to its start. Use wheel/zoom
+   buttons or focus the SVG and use arrows to pan and +/− to zoom. Enter/Space
+   activates a focused cell/edge; Space gestures do not also trigger activation.
 3. Select an explicit mode to set the observer, inspect a target, add/remove a cell
    or add/remove an obstacle. Dashed frontier cells include holes and boundary
    neighbors. The exact-coordinate form also supports disconnected cells.
@@ -51,9 +53,11 @@ Manual checks:
    remove by stable ID. Edge mode exposes all incident shared edges; alternatively
    choose a neighbor direction in the contents panel. Edge markers are explicitly
    ignored by all generic policies, and can be individually added/removed.
-5. Edits, observer, range and policy changes clear old results. Press **Evaluate all
-   targets** to compute a complete new pass. Hover, pan, zoom, orientation and
-   target inspection do not rerun the mathematical batch.
+5. Board membership, ordered contents, edge features, observer, range and policy
+   changes immediately clear old results and automatically schedule a complete pass
+   after **150 ms** without another mathematical edit. **Evaluate all targets**
+   still requests an immediate refresh. Hover, pan, zoom, orientation, target
+   selection and inspection disclosure state do not rerun the mathematical batch.
 6. Disable unlimited and enter range 1: target `(2,0)` has out-of-range styling,
    while inspection still reports blocked physical LOS independently. Invalid
    range input disables evaluation until corrected or unlimited is selected.
@@ -66,6 +70,7 @@ Manual checks:
 | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `web/state.ts`                        | Immutable application transitions through public board editing/generation APIs; stable IDs and selection cleanup |
 | `web/limits.ts`                       | Strict canonical integer input and UI generation/edit admission budgets                                          |
+| `web/recalculation.ts`                | Debounce, cancellation/revision guards and mathematical-input value comparison                                   |
 | `web/evaluation.ts`                   | Whole-board preflight, existing visibility API calls, result-to-style projection and blocker identities          |
 | `web/display.ts`                      | Exact rebasing, inverse affine embedding, presentation rotation, finite absent frontier and framing              |
 | `web/render.ts`                       | SVG scene and exact target/contact/event inspection, with no geometry/rules predicates                           |
@@ -81,10 +86,27 @@ Memoir fallback exists. Generic predicates are interpreted only by the existing
 rulesets. Results retain full board/context, absent-cell evidence and simultaneous
 incidences. Only the selected target's evidence is expanded in the inspection panel.
 
-State owns the last completed batch for display; it is invalidated rather than
-reused after any mathematical input edit. This is not a query cache. Evaluation
-is synchronous inside an explicit action, deferred just long enough to paint its
-busy status. No worker, traversal optimization or speculative cache was added.
+State owns the last completed batch for display; it is invalidated synchronously
+when any mathematical input changes. `Recalculation` holds one immutable pending
+snapshot, a 150 ms debounce timer and a revision token. Superseded timers/animation
+frames are canceled and every deferred boundary/result publication checks its
+revision. Invalid range input cancels pending work; correcting it schedules a fresh
+pass even when its value equals the last valid input. Missing observers and resource
+failures retain explicit unavailable/failed states, with no stale verdict.
+
+The busy state is painted before the unchanged synchronous evaluation. No result
+cache, worker or geometry optimization is added. JavaScript cannot process new
+input while a synchronous pass runs; queued input is handled afterward and clears
+results immediately. The revision guards prevent deferred or reentrant old work
+from publishing over newer state. `data-phase` and `data-evaluations` on the status
+node provide bounded diagnostics for browser verification and measurement.
+
+Pointer activation is resolved from exact identities at pointer-down and committed
+only on an uncanceled, stationary primary-pointer release. Pointer capture stays
+on the SVG, survives scene rebuilds and is released on completion/cancel/loss/blur.
+Secondary touch cancels activation; no pinch gesture is introduced. Browser pointer
+compatibility clicks are suppressed; Enter, standalone Space and accessibility
+clicks remain available. Text fields retain ordinary Space input.
 
 ## Display boundary
 
@@ -144,8 +166,8 @@ The 100,000-candidate cap is an outer admission bound, not a latency target, and
 under 5 times the measured centered 468-cell pass. The dimension bound prevents
 very elongated generated sets, while manual disconnected cells still face exact
 batch and per-query budgets. The stack/edge limits bound the additional payload
-and inspection work. Explicit evaluation is appropriate because the measured
-larger pass occupies hundreds of milliseconds. See the reproducible measurements
+and inspection work. The short debounce consolidates rapid edits because the measured larger pass
+occupies hundreds of milliseconds; it does not eliminate that synchronous pause. See the reproducible measurements
 and limitations in [M3A performance](m3a-performance.md).
 
 ## Verification and known limits
