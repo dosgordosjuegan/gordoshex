@@ -6,9 +6,9 @@ Repository: [dosgordosjuegan/gordoshex](https://github.com/dosgordosjuegan/gordo
 
 The first tool will calculate line of sight and lattice range. Memoir '44 is the first planned game-specific ruleset; its rules will be researched in a later milestone. The interface will support English and Spanish, desktop and mobile browsers, and deployment to GitHub Pages. This is a focused calculator, not a general tabletop simulator.
 
-## Current status: M1 exact geometry engine
+## Current status: M2A board and generic visibility rulesets
 
-M1 implements the reviewed M0 mathematical contracts as a standalone TypeScript library with zero runtime dependencies. Exact bigint/rational clipping, complete reference enumeration, canonical edges and simultaneous events are implemented and independently tested. Board state, game rules and the browser application remain future milestones. P1–P9 retain their approved semantics; the complete P10 schema remains deferred to M2.
+The accepted M1 exact geometry engine is joined by immutable board snapshots, pure board editing, axial/offset generators, three generic contact policies, independent range/LOS evaluation and a versioned scenario codec. All modules have zero runtime dependencies. Game-specific rules, rendering and the browser application remain future work. P1–P9 retain their approved semantics; M2A completes the underlying P10 version-1 scenario schema.
 
 | Document                               | Contents                                                                                                |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------- |
@@ -43,7 +43,7 @@ npm run check
 npm run benchmark
 ```
 
-The public entry point is `src/index.ts`; `npm run build` produces native ESM and declarations in `dist/`.
+The geometry entry point is `src/index.ts`; `npm run build` produces native ESM and declarations in `dist/`.
 
 ```ts
 import { axial, traceSightline } from './dist/index.js';
@@ -57,7 +57,9 @@ if (result.status === 'complete') {
 
 The default per-query candidate limit is `1000n`, selected after measurements; callers can override it. Rejection returns exact count/limit diagnostics without a partial result. Geometry includes every intersected lattice cell independently of board membership.
 
-See [implementation and public API](docs/implementation.md), [performance evidence](docs/performance.md), and the [M1 completion report](docs/m1-report.md). The persistent test oracle uses independent polygon-side intersections and an independent axial search region. No optimized traversal is introduced.
+See [M2A board, ruleset, visibility and scenario APIs](docs/board-and-visibility.md), the [M2A completion report](docs/m2a-report.md), [geometry implementation and public API](docs/implementation.md), [performance evidence](docs/performance.md), and the [M1 completion report](docs/m1-report.md). The persistent test oracle uses independent polygon-side intersections and an independent axial search region. No optimized traversal is introduced.
+
+The M2A entry point is `src/application.ts` (built `dist/application.js`). Scenario codecs take an explicit static ruleset collection; there is no dynamic plugin loader or import/export UI.
 
 Memoir '44 research remains deferred to M2. M3 rendering must subtract an exact local display origin before floating-point conversion.
 
