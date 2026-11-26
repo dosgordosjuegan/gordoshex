@@ -1,7 +1,9 @@
 # M1 implementation and development
 
 The approved contracts in specification.md and geometry.md remain authoritative.
-M1 implements geometry only. There is no board, ruleset, rendering or UI code.
+This document describes the accepted M1 geometry layer. M2A board, ruleset, visibility
+and scenario APIs are documented in [board-and-visibility.md](board-and-visibility.md).
+Geometry remains independent of those modules. There is no rendering or UI code.
 
 ## Toolchain
 
