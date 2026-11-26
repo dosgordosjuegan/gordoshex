@@ -73,16 +73,17 @@ membership. The lower-level `rectangle` function accepts an explicit layout tag.
 
 A `RulesetReference` is `{ id, version, configuration }`, with nonblank string ID
 and version, and copied immutable JSON-object configuration. The `Ruleset` contract
-contains matching `id`/`version` and four synchronous hooks:
+contains matching `id`/`version`, four required synchronous hooks and an optional query-validation hook:
 
 - `validateConfiguration(configuration)` returns accepted, invalid or unsupported.
 - `validateBoard(board, configuration)` returns semantic input-validation issues.
+- Optional `validateQuery(query)` checks selected-query requirements before geometry. It receives immutable board, origin, target, range and ruleset reference, and returns semantic input issues. It is not called by scenario codecs, which have no selected observer.
 - `evaluateRange(context)` returns in-range or out-of-range with explanations.
 - `evaluateLineOfSight(context)` returns clear, blocked or invalid-under-ruleset
   with explanations and all supporting evidence.
 
 Callers can supply a static ruleset collection. The visibility evaluator defaults
-to `GENERIC_RULESETS`; scenario codecs require the collection explicitly and do
+to `BUILTIN_RULESETS` (the three unchanged `GENERIC_RULESETS` plus `MEMOIR44_REFRESH2025`); scenario codecs require the collection explicitly and do
 not depend on a concrete game or demonstration policy implementation. No dynamic
 loader, rules language, cache or worker infrastructure exists.
 
@@ -268,4 +269,4 @@ adapter's responsibility. Payloads intentionally exclude non-JSON values.
 Cancellation, scheduling, schemas for persisted query evidence, localized message
 catalogues and all presentation/import-export UI remain deferred. M1 performance
 evidence still describes geometry only; no new application performance claim is
-made. Ruleset-specific invalid and absence-blocking adapters exist only in tests.
+made. The Memoir '44 adapter additionally invalidates positive-length absent contacts under its approved arbitrary-board convention. The absence-blocking demonstration remains test-only.
