@@ -127,6 +127,10 @@ export type ConfigurationDecision =
       readonly status: 'invalid' | 'unsupported';
       readonly explanations: readonly SemanticMessage[];
     };
+export type RulesetQuery = Pick<
+  RulesetContext,
+  'board' | 'origin' | 'target' | 'range' | 'ruleset'
+>;
 export interface Ruleset {
   readonly id: string;
   readonly version: string;
@@ -135,6 +139,8 @@ export interface Ruleset {
     board: BoardSnapshot,
     configuration: JsonObject,
   ): readonly SemanticMessage[];
+  /** Selected-query validation, before geometry; scenarios have no selected observer. */
+  validateQuery?(query: RulesetQuery): readonly SemanticMessage[];
   evaluateRange(context: RulesetContext): RangeDecision;
   evaluateLineOfSight(context: RulesetContext): LosDecision;
 }

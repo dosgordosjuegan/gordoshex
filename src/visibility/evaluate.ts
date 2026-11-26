@@ -2,7 +2,7 @@ import { BoardSnapshot, boardCoordinate } from '../board/model.js';
 import { distance, type Axial } from '../geometry/coordinates.js';
 import { DEFAULT_MAX_CANDIDATES, traceSightline } from '../geometry/query.js';
 import { fields, InputError } from '../data/validation.js';
-import { GENERIC_RULESETS } from '../rulesets/generic.js';
+import { BUILTIN_RULESETS } from '../rulesets/registry.js';
 import { resolveRuleset } from '../rulesets/resolve.js';
 import {
   message,
@@ -93,7 +93,7 @@ function internalFailure(): VisibilityResult {
 }
 export function evaluateVisibility(
   input: unknown,
-  collection: readonly Ruleset[] = GENERIC_RULESETS,
+  collection: readonly Ruleset[] = BUILTIN_RULESETS,
 ): VisibilityResult {
   let query: VisibilityQuery;
   try {
@@ -108,6 +108,23 @@ export function evaluateVisibility(
   try {
     const resolved = resolveRuleset(query.ruleset, query.board, collection);
     if (resolved.status !== 'supported') return resolved;
+    const queryIssues =
+      resolved.ruleset.validateQuery?.(
+        Object.freeze({
+          board: query.board,
+          origin: query.origin,
+          target: query.target,
+          range: query.range,
+          ruleset: query.ruleset,
+        }),
+      ) ?? [];
+    if (queryIssues.length)
+      return Object.freeze({
+        status: 'invalid-query-input',
+        explanations: Object.freeze(
+          queryIssues.map((m) => message(m.code, m.arguments)),
+        ),
+      });
     const geometry = traceSightline(
       query.origin,
       query.target,
