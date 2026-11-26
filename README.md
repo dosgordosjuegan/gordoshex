@@ -4,9 +4,9 @@ Freely accessible browser tools for hexagonal tabletop games, developed by **Dos
 
 Repository: [dosgordosjuegan/gordoshex](https://github.com/dosgordosjuegan/gordoshex).
 
-The first tool will calculate line of sight and lattice range. Memoir '44 is the first planned game-specific ruleset; its rules will be researched in a later milestone. The interface will support English and Spanish, desktop and mobile browsers, and deployment to GitHub Pages. This is a focused calculator, not a general tabletop simulator.
+The first tool will calculate line of sight and lattice range. Memoir '44 is the first planned game-specific ruleset; its researched rules and pending modeling decisions are recorded in [the M2B.1 specification](docs/rulesets/memoir44.md). No Memoir '44 adapter is implemented. The interface will support English and Spanish, desktop and mobile browsers, and deployment to GitHub Pages. This is a focused calculator, not a general tabletop simulator.
 
-## Current status: M2A board and generic visibility rulesets
+## Current status: M2B.1 Memoir '44 research for review
 
 The accepted M1 exact geometry engine is joined by immutable board snapshots, pure board editing, axial/offset generators, three generic contact policies, independent range/LOS evaluation and a versioned scenario codec. All modules have zero runtime dependencies. Game-specific rules, rendering and the browser application remain future work. P1–P9 retain their approved semantics; M2A completes the underlying P10 version-1 scenario schema.
 
@@ -61,7 +61,7 @@ See [M2A board, ruleset, visibility and scenario APIs](docs/board-and-visibility
 
 The M2A entry point is `src/application.ts` (built `dist/application.js`). Scenario codecs take an explicit static ruleset collection; there is no dynamic plugin loader or import/export UI.
 
-Memoir '44 research remains deferred to M2. M3 rendering must subtract an exact local display origin before floating-point conversion.
+M2B.1 [Memoir '44 research](docs/rulesets/memoir44.md) distinguishes the legacy and refreshed base-game editions, records unresolved boundary cases and proposes adapter data/fixtures for review. Edition and modeling decisions require approval before adapter implementation. M3 rendering must subtract an exact local display origin before floating-point conversion.
 
 ## License
 
