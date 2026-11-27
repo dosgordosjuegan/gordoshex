@@ -44,9 +44,10 @@ export const memoirEn: Readonly<Record<string, string>> = Object.freeze({
     'Unsupported or invalid cell data; no valid visibility verdict.',
   'memoir.unsupported-entity': 'Unsupported entity',
   'memoir.legend':
-    'A/X = Allies/Axis. Unit boxes: crossed lines = Infantry, oval = Armor, dot = Artillery. Purple A badge = artillery LOS exemption; physical LOS and range still apply to the displayed visibility, not attack legality.',
-  'memoir.legend.visible': 'In range + physical LOS clear',
-  'memoir.legend.blocked': 'Physical LOS blocked',
+    'A/X = Allies/Axis. Unit boxes: crossed lines = Infantry, oval = Armor, dot = Artillery. Green check = range and LOS requirements satisfied, including the artillery LOS exemption marked A. Gray = out of range. Physical LOS and engine visibility remain separate in inspection. Neither green nor A certifies a legal attack.',
+  'memoir.legend.visible': 'Range and LOS requirements satisfied',
+  'memoir.status.requirements-met': 'Range and LOS requirements satisfied',
+  'memoir.legend.blocked': 'LOS required and physically blocked',
   'memoir.legend.out-of-range': 'Outside effective weapon range',
   'memoir.unit-label': 'Observer unit',
   'memoir.intrinsic': 'Intrinsic maximum range',

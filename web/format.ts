@@ -25,6 +25,7 @@ export function semantic(value: SemanticMessage): string {
 }
 export const symbols: Readonly<Record<string, string>> = Object.freeze({
   observer: '◎',
+  'requirements-met': '✓',
   visible: '·',
   blocked: '×',
   'out-of-range': '−',

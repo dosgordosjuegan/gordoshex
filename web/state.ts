@@ -41,6 +41,7 @@ export type Mode =
   | 'edge'
   | 'paint';
 export interface AppState {
+  readonly showCoordinates: boolean;
   readonly paletteTab: 'terrain' | 'unit' | 'installation';
   readonly brush: MemoirBrush;
   readonly affiliation: Affiliation;
@@ -81,6 +82,7 @@ export function initialState(): AppState {
     brush: { kind: 'terrain', type: 'forest' },
     affiliation: 'allies',
     paletteTab: 'terrain',
+    showCoordinates: true,
     origin: axial(0n, 0n),
     target: axial(2n, 0n),
     inspected: axial(2n, 0n),

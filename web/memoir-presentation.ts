@@ -1,5 +1,6 @@
 import type { VisibilityResult, BoardEntity } from '../src/application.js';
 import { t } from './format.js';
+import { presentation, type CellStyle } from './evaluation.js';
 const label = (key: string): string =>
   t(key) === key ? t('memoir.unsupported-entity') : t(key);
 export function entityLabel(entity: BoardEntity): string {
@@ -53,5 +54,31 @@ export function artilleryAnnotation(
     result?.status === 'evaluated' &&
     result.los.status === 'blocked' &&
     memoirFacts(result)?.losRequired === false
+  );
+}
+
+/** Memoir board colors project range/LOS requirements, never attack legality or physical visibility. */
+export function memoirPresentation(
+  result: VisibilityResult | undefined,
+): CellStyle | 'requirements-met' {
+  const ordinary = presentation(result);
+  if (
+    result?.status !== 'evaluated' ||
+    result.context.ruleset.id !== 'memoir44.refresh2025'
+  )
+    return ordinary;
+  if (
+    ordinary === 'visible' ||
+    (ordinary === 'blocked' && memoirFacts(result)?.losRequired === false)
+  )
+    return 'requirements-met';
+  return ordinary;
+}
+export function showArtilleryBadge(
+  result: VisibilityResult | undefined,
+): boolean {
+  return (
+    memoirPresentation(result) === 'requirements-met' &&
+    artilleryAnnotation(result)
   );
 }

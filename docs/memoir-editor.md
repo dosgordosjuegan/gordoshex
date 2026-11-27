@@ -57,14 +57,20 @@ An invalid or unsupported result remains an explicit error, not a visibility ver
 
 Terrain uses original paths: trees, hedge rows, roofs/church steeple, hill contours,
 water waves, shore marks and bridge planks. Installations have simple independent
-symbols along the lower cell edge. Units use conventional rectangular military
+symbols sized to the available cell area: a lone installation is large;
+layered installations occupy separate positions around the unit. All five types
+remain separate even in a fully stacked cell. Open terrain has no decorative grass. Units use conventional rectangular military
 symbols: crossed lines for Infantry, oval for Armor, dot for Artillery. Affiliations
 have blue/rust styling plus **A/X** labels, with complete accessible cell labels.
 These are generic original symbols, not official tiles, badges or publisher assets.
 
 Terrain fill and shapes remain beneath status discs and outlines; unit and
 installation symbols remain separate. Observer/target/blocker outlines, coordinate
-labels and status symbols remain visible. Both orientations use the accepted exact
+labels and status symbols remain available. **Coordinate labels** toggles exact
+coordinate text without recalculating. Labels default off in Memoir and on in
+generic mode; each workspace retains its preference. Cell identities and accessible
+descriptions remain exact when labels are hidden. Units are larger in sparse cells;
+dense stacks reduce their size to keep installations and status indicators separate. Both orientations use the accepted exact
 rebase/display boundary. Pointing/gestures still resolve exact lattice identities.
 
 All M3A usability corrections remain: drag anywhere with left/middle button,
@@ -83,11 +89,23 @@ compare elevation, classify contacts or pair sides.
 
 In Memoir mode, the unlimited checkbox reads **No additional range cap**. It never
 means unlimited weapon range. The adapter still supplies standard maxima 3/3/6
-and applies any inclusive additional cap. For artillery, a purple **A** annotation
-on physically blocked targets and an explicit inspector message explain the
-ordinary LOS exemption. The physical LOS verdict and `visibility.visible` remain
+and applies any inclusive additional cap. Memoir board colors show satisfaction of
+**range and LOS requirements**, separately from physical visibility:
+
+- Green check: in range, with clear physical LOS or the adapter's official LOS exemption.
+- Red cross: in range, physically blocked, and LOS required.
+- Gray: out of range, without a prominent exemption badge.
+- Invalid/failed/unsupported results: distinct diagnostic states, never green/red verdicts.
+
+In-range, physically blocked artillery targets carry a purple **A** exemption
+annotation alongside the green check. The inspector still identifies intervening
+units/terrain, reports blocked physical LOS, and explains the exemption separately,
+including when out of range. These facts come from adapter-owned semantic data;
+the frontend does not hardcode unit ranges or game predicates. The physical LOS verdict and `visibility.visible` remain
 unchanged: blocked artillery is still physically blocked and has `visible: false`.
-An exemption or in-range target is not a legal-attack verdict.
+A green check or exemption is not a legal-attack verdict. This user-approved
+Memoir presentation refines the original physical-visibility color projection;
+generic colors and every engine result contract remain unchanged.
 
 Normal explanations cover strict interior blockers, global opposite-side boundary
 pairs, isolated-vertex modeling convention, endpoint/elevation/bare-hill exemptions,
@@ -105,7 +123,8 @@ role replacement with public board edits and `memoir44Cell`/board validation.
 `web/memoir-controls.ts` owns palettes and profile control labels.
 `web/memoir-svg.ts` and `web/svg.ts` draw original glyphs.
 `web/memoir-presentation.ts` projects adapter explanation data, including the
-artillery annotation. Existing state, evaluation, rendering, formatting and main
+artillery annotation and requirement-status projection. `web/memoir-layout.ts`
+keeps visual glyph placements separate from mathematical geometry. Existing state, evaluation, rendering, formatting and main
 wiring select these UI capabilities. No production file under `src/` is changed.
 No runtime/build dependency, cache, worker or optimized geometry traversal is added.
 
@@ -129,9 +148,23 @@ validation cache is introduced. Cooperative yielding is the smallest next UI
 improvement to measure if the pause is unacceptable; reducing validation cost
 requires a separately reviewed validated-snapshot contract.
 
-Screenshots: [desktop](screenshots/m3b-desktop.png), [mobile](screenshots/m3b-mobile.png).
+Screenshots: [desktop](screenshots/m3b-desktop.png), [mobile](screenshots/m3b-mobile.png),
+[artillery regression](screenshots/m3b-artillery-acceptance.png),
+[populated pointy](screenshots/m3b-acceptance-pointy.png),
+[populated flat](screenshots/m3b-acceptance-flat.png),
+[populated mobile](screenshots/m3b-acceptance-mobile.png).
 These are actual Chromium application captures, not substitutes for functional tests.
 Chromium desktop/mobile viewport is verified; full physical-device and broader
 browser/assistive-technology coverage remains M3C. Lakes, terrain variants, special
 units, legacy rules, expansions, scenario UI, legal attacks and deployment remain
 unsupported. This is not exhaustive Memoir '44 base-game compatibility.
+
+## Manual acceptance regression
+
+Artillery observer `(2,4)`, intervening Axis Armor `(1,4)`, target `(0,4)`,
+all cells present, no additional cap: distance **2**, range satisfied, physical LOS
+**blocked**, LOS not required. The board shows a green check plus **A** while the
+engine keeps `visible: false`. Replacing the observer with Infantry shows red.
+Tests also cover terrain obstruction, intrinsic/user-cap boundaries, invalidity,
+resource failures, unchanged generic projections, label toggling without evaluation,
+and glyph containment/separation in both orientations.

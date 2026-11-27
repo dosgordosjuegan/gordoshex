@@ -13,6 +13,7 @@ export const en: Readonly<Record<string, string>> = Object.freeze({
   'layout.axial': 'Axial parallelogram',
   'layout.pointy-odd-row': 'Staggered rows',
   'layout.flat-odd-column': 'Staggered columns',
+  'display.coordinates': 'Coordinate labels',
   'display.orientation': 'Presentation',
   'display.pointy': 'Pointy top',
   'display.flat': 'Flat top',

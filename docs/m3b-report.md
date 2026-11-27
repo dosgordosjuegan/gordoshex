@@ -63,14 +63,14 @@ usage, performance documentation and screenshots reflect the supported content.
 
 Pinned Node 22.13.1 / npm 10.9.2; no tooling/dependency versions changed.
 
-- `npm run check`: **211 tests / 15 files**, strict library/frontend type checking,
+- `npm run check`: **227 tests / 16 files**, strict library/frontend type checking,
   ESLint, Prettier and standalone library/declaration build pass.
 - All **184 pre-M3B tests** are retained; **27 UI tests** add safe workspace switching,
   every terrain/unit/installation, independent immutable layers, stable IDs/no-op,
   observer removal/replacement, unit range caps, unsupported/invalid results, human
   messages and the Memoir manual fixture.
 - `npm run build:app`: production browser bundle passes.
-- `npm run test:browser`: **19 Chromium tests** pass: all 12 existing tests plus 7
+- `npm run test:browser`: **21 Chromium tests** pass: all 12 existing tests plus 9
   Memoir workflows. Coverage includes palette/replacement/removal, affiliation,
   safe mode switching, missing observer, ranges/artillery, elevation/global boundary
   explanations, absence invalidity, isolated vertices, safe gestures, responsive
@@ -101,8 +101,8 @@ inspection DOM/layout. All resource admission limits remain unchanged.
 
 | Cells | Evaluation median / p95 ms | Full presentation median / p95 ms |
 | ----: | -------------------------: | --------------------------------: |
-|   117 |                85.5 / 95.3 |                       25.5 / 28.7 |
-|   468 |              753.5 / 796.1 |                       94.2 / 97.6 |
+|   117 |                83.0 / 96.8 |                       25.5 / 32.4 |
+|   468 |              716.4 / 743.7 |                       74.7 / 86.3 |
 
 The 468-cell synchronous Memoir pass is noticeable. Debouncing consolidates rapid
 edits but cannot make calculation interactive while it runs. The smallest next
@@ -122,3 +122,22 @@ supported subset, not exhaustive Memoir compatibility or official endorsement.
 Launch with `nvm use`, `npm ci`, `npm run dev -- --host 127.0.0.1`; choose the Memoir
 supported-subset entry. Production inspection uses `npm run build:app` followed by
 `npm run preview -- --port 4173`.
+
+## Manual acceptance corrections (PR #7)
+
+Memoir board status now projects range and LOS requirements: in-range artillery
+with adapter-provided LOS exemption is green with **A**, retaining blocked physical
+LOS and `visible: false` in the inspector and underlying result. Out-of-range
+cells are gray without a prominent exemption badge. Generic presentation and
+invalid/failure precedence are unchanged. No attack legality is inferred.
+
+Open-terrain grass is removed. Installations are substantially larger and use
+content-dependent placements; sparse cells use more space and dense stacks keep
+units, installations and status/coordinate areas separate. Coordinate labels are
+optional, default off for Memoir/on for generic, and never trigger evaluation.
+Both orientations, ordinary zoom, layered graphics and actual desktop/mobile
+screenshots are verified. Sixteen additional unit/regression tests cover the
+manual artillery fixture, range/cap/diagnostic behavior, generic preservation and
+all installation-count/unit combinations. Two real browser workflows cover these
+corrections. No engine source, dependencies, resource budgets or game predicates
+are changed.

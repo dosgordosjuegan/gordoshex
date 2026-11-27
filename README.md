@@ -69,7 +69,10 @@ The existing `npm run benchmark` still measures standalone geometry.
 Choose **Memoir '44 2025 · supported subset** to edit terrain, installations and
 standard Allied/Axis units. Generic and Memoir modes retain separate working
 boards in memory. Memoir's **No additional range cap** retains intrinsic unit
-range; artillery's exemption is shown separately from blocked physical LOS.
+range. Memoir green checks mean range and LOS requirements are satisfied; blocked
+artillery in range has a separate **A** exemption annotation. Inspection preserves
+blocked physical LOS and the engine visibility boolean. No target is certified as
+a legal attack. **Coordinate labels** can be toggled without recalculating.
 This is inspection, not attack legality or exhaustive game compatibility. See
 [Memoir editor usage](docs/memoir-editor.md), [M3B performance](docs/m3b-performance.md)
 and [M3B completion evidence](docs/m3b-report.md).

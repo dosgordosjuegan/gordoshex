@@ -282,6 +282,9 @@ element('edge-side').addEventListener('submit', (event) => {
     render();
   });
 });
+input('coordinates').addEventListener('change', () =>
+  change({ ...state, showCoordinates: input('coordinates').checked }),
+);
 element('evaluate').addEventListener('click', evaluate);
 element('fit').addEventListener('click', () => render(true));
 element('zoom-in').addEventListener('click', () => interaction.zoom(1.2));

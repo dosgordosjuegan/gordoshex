@@ -62,7 +62,9 @@ Manual checks:
 6. Disable unlimited and enter range 1: target `(2,0)` has out-of-range styling,
    while inspection still reports blocked physical LOS independently. Invalid
    range input disables evaluation until corrected or unlimited is selected.
-7. Remove the observer or target: only the removed selection is cleared. A missing
+7. Toggle **Coordinate labels** to show/hide exact labels without recalculation.
+   Generic mode defaults on; Memoir defaults off and retains a separate preference.
+8. Remove the observer or target: only the removed selection is cleared. A missing
    observer prevents evaluation. Zero board dimensions produce an editable empty set.
 
 ## Architecture
@@ -129,7 +131,10 @@ board offers `(0,0)` as a seed. It does not attempt to render the infinite absen
 lattice. Holes adjacent to existing cells have dashed outlines and coordinate labels.
 
 Observer, visible, blocked, out-of-range, ruleset-invalid, failed and pending
-states have distinct symbols/outlines as well as color. Out-of-range styling wins
+states have distinct symbols/outlines as well as color. These physical-visibility
+colors apply to generic policies. Memoir uses its separately labeled
+[range/LOS-requirements projection](memoir-editor.md#range-physical-los-and-artillery),
+including green exempt artillery with blocked physical LOS. Out-of-range styling wins
 only for completed clear/blocked LOS; inspection retains both independent facts.
 Failures, invalid/unsupported requests and ruleset-invalid LOS have distinct
 projections and no ordinary blocked/visible verdict. Generic policies cannot

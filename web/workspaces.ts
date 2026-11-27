@@ -5,6 +5,7 @@ import { memoirMode, paintMemoir } from './memoir-editing.js';
 export function initialMemoirState(): AppState {
   let state: AppState = {
     ...initialState(),
+    showCoordinates: false,
     board: rectangle(13n, 9n, axial(0n, 0n), 'pointy-odd-row'),
     rulesetId: MEMOIR44_REFRESH2025.id,
     nextId: 1,

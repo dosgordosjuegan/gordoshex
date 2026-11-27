@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "timestamp": "2026-11-27T15:30:19.526Z",
-    "sourceSha256": "5de105d4df8f653e87f51ec033b5ab58f57c04429f38d66b8eae102bb10dc5ab",
+    "timestamp": "2026-11-27T20:44:32.080Z",
+    "sourceSha256": "2f5e40e063adbfe770397a476d6e876e000cfb2593d7e1932a1a6eae179f84ac",
     "sourceFiles": [
       "benchmarks/browser-run.mjs",
       "benchmarks/browser.html",
@@ -50,6 +50,7 @@
       "web/main.ts",
       "web/memoir-controls.ts",
       "web/memoir-editing.ts",
+      "web/memoir-layout.ts",
       "web/memoir-presentation.ts",
       "web/memoir-svg.ts",
       "web/messages/en.ts",
@@ -3221,81 +3222,81 @@
         ],
         "samples": [
           {
-            "evaluationMs": 95.30000001192093,
-            "presentationMs": 28.69999998807907,
-            "twoFrameMs": 11.200000047683716,
-            "candidates": "1757",
-            "checksum": "46e1a1fbdeeedfd8d43f265b7a9a4ad97fb459726c5fdbfdccccda03762b9bcb"
-          },
-          {
-            "evaluationMs": 85.5,
-            "presentationMs": 27.30000001192093,
-            "twoFrameMs": 10.599999964237213,
-            "candidates": "1757",
-            "checksum": "46e1a1fbdeeedfd8d43f265b7a9a4ad97fb459726c5fdbfdccccda03762b9bcb"
-          },
-          {
-            "evaluationMs": 84.20000004768372,
-            "presentationMs": 25,
-            "twoFrameMs": 6.899999976158142,
-            "candidates": "1757",
-            "checksum": "46e1a1fbdeeedfd8d43f265b7a9a4ad97fb459726c5fdbfdccccda03762b9bcb"
-          },
-          {
-            "evaluationMs": 92.60000002384186,
-            "presentationMs": 26.299999952316284,
-            "twoFrameMs": 12.200000047683716,
-            "candidates": "1757",
-            "checksum": "46e1a1fbdeeedfd8d43f265b7a9a4ad97fb459726c5fdbfdccccda03762b9bcb"
-          },
-          {
-            "evaluationMs": 91.5,
-            "presentationMs": 24.19999998807907,
-            "twoFrameMs": 9.899999976158142,
-            "candidates": "1757",
-            "checksum": "46e1a1fbdeeedfd8d43f265b7a9a4ad97fb459726c5fdbfdccccda03762b9bcb"
-          },
-          {
-            "evaluationMs": 77.79999995231628,
-            "presentationMs": 25.600000023841858,
-            "twoFrameMs": 23.80000001192093,
-            "candidates": "1757",
-            "checksum": "46e1a1fbdeeedfd8d43f265b7a9a4ad97fb459726c5fdbfdccccda03762b9bcb"
-          },
-          {
-            "evaluationMs": 88.60000002384186,
-            "presentationMs": 25.5,
+            "evaluationMs": 96.79999995231628,
+            "presentationMs": 26.900000035762787,
             "twoFrameMs": 10.099999964237213,
             "candidates": "1757",
             "checksum": "46e1a1fbdeeedfd8d43f265b7a9a4ad97fb459726c5fdbfdccccda03762b9bcb"
           },
           {
-            "evaluationMs": 78.89999997615814,
-            "presentationMs": 24.700000047683716,
-            "twoFrameMs": 9,
+            "evaluationMs": 83,
+            "presentationMs": 28.19999998807907,
+            "twoFrameMs": 8.599999964237213,
             "candidates": "1757",
             "checksum": "46e1a1fbdeeedfd8d43f265b7a9a4ad97fb459726c5fdbfdccccda03762b9bcb"
           },
           {
-            "evaluationMs": 80.30000001192093,
-            "presentationMs": 24.599999964237213,
-            "twoFrameMs": 17.900000035762787,
+            "evaluationMs": 83.70000004768372,
+            "presentationMs": 26,
+            "twoFrameMs": 10.5,
+            "candidates": "1757",
+            "checksum": "46e1a1fbdeeedfd8d43f265b7a9a4ad97fb459726c5fdbfdccccda03762b9bcb"
+          },
+          {
+            "evaluationMs": 96.10000002384186,
+            "presentationMs": 32.39999997615814,
+            "twoFrameMs": 33.5,
+            "candidates": "1757",
+            "checksum": "46e1a1fbdeeedfd8d43f265b7a9a4ad97fb459726c5fdbfdccccda03762b9bcb"
+          },
+          {
+            "evaluationMs": 86.10000002384186,
+            "presentationMs": 24.19999998807907,
+            "twoFrameMs": 9.399999976158142,
+            "candidates": "1757",
+            "checksum": "46e1a1fbdeeedfd8d43f265b7a9a4ad97fb459726c5fdbfdccccda03762b9bcb"
+          },
+          {
+            "evaluationMs": 79.90000003576279,
+            "presentationMs": 23,
+            "twoFrameMs": 19.399999976158142,
+            "candidates": "1757",
+            "checksum": "46e1a1fbdeeedfd8d43f265b7a9a4ad97fb459726c5fdbfdccccda03762b9bcb"
+          },
+          {
+            "evaluationMs": 77.19999998807907,
+            "presentationMs": 22.80000001192093,
+            "twoFrameMs": 19.5,
+            "candidates": "1757",
+            "checksum": "46e1a1fbdeeedfd8d43f265b7a9a4ad97fb459726c5fdbfdccccda03762b9bcb"
+          },
+          {
+            "evaluationMs": 76.30000001192093,
+            "presentationMs": 22.599999964237213,
+            "twoFrameMs": 9.600000023841858,
+            "candidates": "1757",
+            "checksum": "46e1a1fbdeeedfd8d43f265b7a9a4ad97fb459726c5fdbfdccccda03762b9bcb"
+          },
+          {
+            "evaluationMs": 77,
+            "presentationMs": 25.5,
+            "twoFrameMs": 21,
             "candidates": "1757",
             "checksum": "46e1a1fbdeeedfd8d43f265b7a9a4ad97fb459726c5fdbfdccccda03762b9bcb"
           }
         ],
         "summary": {
           "evaluationMs": {
-            "median": 85.5,
-            "p95": 95.30000001192093
+            "median": 83,
+            "p95": 96.79999995231628
           },
           "presentationMs": {
             "median": 25.5,
-            "p95": 28.69999998807907
+            "p95": 32.39999997615814
           },
           "twoFrameMs": {
-            "median": 10.599999964237213,
-            "p95": 23.80000001192093
+            "median": 10.5,
+            "p95": 33.5
           }
         }
       },
@@ -15764,81 +15765,81 @@
         ],
         "samples": [
           {
-            "evaluationMs": 785.3999999761581,
-            "presentationMs": 95.10000002384186,
-            "twoFrameMs": 34,
+            "evaluationMs": 715.9000000357628,
+            "presentationMs": 80.30000001192093,
+            "twoFrameMs": 28.799999952316284,
             "candidates": "20525",
             "checksum": "a208d4c56605063162c03abe6a28d6ed5e5485c5c53dca42d9e0d23914d5856a"
           },
           {
-            "evaluationMs": 735.1999999880791,
-            "presentationMs": 91.19999998807907,
-            "twoFrameMs": 20.69999998807907,
+            "evaluationMs": 716.3999999761581,
+            "presentationMs": 72.19999998807907,
+            "twoFrameMs": 31,
             "candidates": "20525",
             "checksum": "a208d4c56605063162c03abe6a28d6ed5e5485c5c53dca42d9e0d23914d5856a"
           },
           {
-            "evaluationMs": 762.1999999880791,
-            "presentationMs": 97.60000002384186,
-            "twoFrameMs": 28.399999976158142,
+            "evaluationMs": 702.3000000119209,
+            "presentationMs": 86.30000001192093,
+            "twoFrameMs": 31.099999964237213,
             "candidates": "20525",
             "checksum": "a208d4c56605063162c03abe6a28d6ed5e5485c5c53dca42d9e0d23914d5856a"
           },
           {
-            "evaluationMs": 796.0999999642372,
-            "presentationMs": 93.10000002384186,
-            "twoFrameMs": 26.899999976158142,
+            "evaluationMs": 728.9000000357628,
+            "presentationMs": 84.09999996423721,
+            "twoFrameMs": 26.5,
             "candidates": "20525",
             "checksum": "a208d4c56605063162c03abe6a28d6ed5e5485c5c53dca42d9e0d23914d5856a"
           },
           {
-            "evaluationMs": 776,
-            "presentationMs": 96.29999995231628,
-            "twoFrameMs": 35.30000001192093,
+            "evaluationMs": 721,
+            "presentationMs": 70.40000003576279,
+            "twoFrameMs": 25.599999964237213,
             "candidates": "20525",
             "checksum": "a208d4c56605063162c03abe6a28d6ed5e5485c5c53dca42d9e0d23914d5856a"
           },
           {
-            "evaluationMs": 716.8000000119209,
-            "presentationMs": 94.19999998807907,
-            "twoFrameMs": 28.69999998807907,
+            "evaluationMs": 704.1999999880791,
+            "presentationMs": 70.69999998807907,
+            "twoFrameMs": 21.19999998807907,
             "candidates": "20525",
             "checksum": "a208d4c56605063162c03abe6a28d6ed5e5485c5c53dca42d9e0d23914d5856a"
           },
           {
-            "evaluationMs": 743.6000000238419,
-            "presentationMs": 93.5,
-            "twoFrameMs": 29.099999964237213,
+            "evaluationMs": 705.5999999642372,
+            "presentationMs": 69.70000004768372,
+            "twoFrameMs": 31.599999964237213,
             "candidates": "20525",
             "checksum": "a208d4c56605063162c03abe6a28d6ed5e5485c5c53dca42d9e0d23914d5856a"
           },
           {
-            "evaluationMs": 732.4000000357628,
-            "presentationMs": 87.89999997615814,
-            "twoFrameMs": 37.69999998807907,
+            "evaluationMs": 729.8000000119209,
+            "presentationMs": 76.90000003576279,
+            "twoFrameMs": 23.799999952316284,
             "candidates": "20525",
             "checksum": "a208d4c56605063162c03abe6a28d6ed5e5485c5c53dca42d9e0d23914d5856a"
           },
           {
-            "evaluationMs": 753.5,
-            "presentationMs": 97.19999998807907,
-            "twoFrameMs": 31.399999976158142,
+            "evaluationMs": 743.6999999880791,
+            "presentationMs": 74.69999998807907,
+            "twoFrameMs": 26.5,
             "candidates": "20525",
             "checksum": "a208d4c56605063162c03abe6a28d6ed5e5485c5c53dca42d9e0d23914d5856a"
           }
         ],
         "summary": {
           "evaluationMs": {
-            "median": 753.5,
-            "p95": 796.0999999642372
+            "median": 716.3999999761581,
+            "p95": 743.6999999880791
           },
           "presentationMs": {
-            "median": 94.19999998807907,
-            "p95": 97.60000002384186
+            "median": 74.69999998807907,
+            "p95": 86.30000001192093
           },
           "twoFrameMs": {
-            "median": 29.099999964237213,
-            "p95": 37.69999998807907
+            "median": 26.5,
+            "p95": 31.599999964237213
           }
         }
       }

@@ -8,17 +8,13 @@ import {
 } from '../src/application.js';
 import { svgElement as el } from './svg.js';
 import { t } from './format.js';
+import { memoirLayout } from './memoir-layout.js';
 import type { Affiliation } from './memoir-editing.js';
 const path = (d: string): SVGPathElement => el('path', { d });
 export function terrainGlyph(type: Memoir44Terrain): SVGGElement {
   const g = el('g', { class: `terrain-glyph terrain-${type}` });
   switch (type) {
     case 'open':
-      g.append(
-        path(
-          'M-.6 .3 l.1 -.15 .1 .15 M.3 -.4 l.1 -.15 .1 .15 M-.1 .6 l.1 -.15 .1 .15',
-        ),
-      );
       break;
     case 'forest':
       g.append(
@@ -122,11 +118,12 @@ export function unitGlyph(
     }),
   );
   if (type === 'infantry')
-    g.append(path('M-.42 -.2 L.42 .2 M.42 -.2 L-.42 .2'));
+    g.append(path('M-.12 -.2 L.40 .2 M.40 -.2 L-.12 .2'));
   else if (type === 'armor')
-    g.append(el('ellipse', { cx: '0', cy: '0', rx: '.3', ry: '.16' }));
-  else g.append(el('circle', { cx: '0', cy: '0', r: '.10' }));
-  const text = el('text', { x: '-.4', y: '-.36', class: 'affiliation-symbol' });
+    g.append(el('ellipse', { cx: '.14', cy: '0', rx: '.22', ry: '.16' }));
+  else g.append(el('circle', { cx: '.14', cy: '0', r: '.10' }));
+  g.append(path('M-.22 -.26 V.26'));
+  const text = el('text', { x: '-.43', y: '.08', class: 'affiliation-symbol' });
   text.textContent = side === 'allies' ? 'A' : 'X';
   g.append(text);
   return g;
@@ -154,16 +151,22 @@ export function drawMemoirCell(
   const terrain = terrainGlyph(data.terrain);
   terrain.setAttribute('transform', 'scale(.85)');
   glyph.append(terrain);
-  if (data.unit) {
+  const layout = memoirLayout(!!data.unit, data.installations.length);
+  if (data.unit && layout.unit) {
     const unit = unitGlyph(data.unit.type, data.unit.side);
-    unit.setAttribute('transform', 'translate(0 -.08) scale(.85)');
+    unit.setAttribute(
+      'transform',
+      `translate(${layout.unit.x} ${layout.unit.y}) scale(${layout.unit.scale})`,
+    );
     glyph.append(unit);
   }
   for (const [index, installation] of data.installations.entries()) {
     const icon = installationGlyph(installation.type);
+    const placement = layout.installations[index];
+    if (!placement) throw new Error('Missing installation placement');
     icon.setAttribute(
       'transform',
-      `translate(${-0.5 + index * 0.25} .48) scale(.19)`,
+      `translate(${placement.x} ${placement.y}) scale(${placement.scale})`,
     );
     glyph.append(icon);
   }

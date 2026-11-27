@@ -161,7 +161,7 @@ test('unit ranges, additional cap and blocked artillery exemption remain separat
     'No — artillery LOS exemption',
   );
   await expect(page.locator('[data-cell="2,0"]')).toHaveClass(
-    /blocked.*los-exempt|los-exempt.*blocked/,
+    /requirements-met.*los-exempt|los-exempt.*requirements-met/,
   );
   await page.getByLabel('No additional range cap').uncheck();
   await page.getByLabel('Additional range cap (inclusive)').fill('1');
@@ -334,4 +334,197 @@ test('absent-cell invalidity and isolated-vertex convention are human-readable a
     .click();
   await expect(page.locator('#exact-evidence')).toContainText('[1/3, 1/3]');
   await expect(page.locator('#exact-evidence')).toContainText('[2/3, 2/3]');
+});
+
+test('manual artillery acceptance keeps physical facts while coloring requirements and withholding out-of-range badges', async ({
+  page,
+}) => {
+  await ready(page);
+  await page
+    .getByRole('button', { name: 'Generate board', exact: true })
+    .click();
+  await unit(page, 'Artillery');
+  await at(page, '2', '4');
+  await page.getByLabel('Interaction mode').selectOption('observer');
+  await at(page, '2', '4');
+  await unit(page, 'Armor', 'axis');
+  await at(page, '1', '4');
+  await settled(page);
+  await inspect(page, '0', '4');
+  const cell = page.locator('[data-cell="0,4"]');
+  await expect(cell).toHaveClass(/requirements-met/);
+  await expect(cell.locator('.status-disc')).toHaveCSS(
+    'fill',
+    'rgb(24, 119, 70)',
+  );
+  await expect(cell).toHaveAttribute('data-physical-los', 'blocked');
+  await expect(cell).toHaveAttribute('data-range', 'in-range');
+  await expect(cell).toHaveAttribute('data-engine-visible', 'false');
+  await expect(cell.locator('.exemption-symbol')).toHaveText('A');
+  await expect(page.locator('#target-inspection')).toContainText(
+    'Exact lattice distance: 2',
+  );
+  await expect(page.locator('#target-inspection')).toContainText('Axis Armor');
+  await expect(page.locator('#target-inspection')).toContainText(
+    'No — artillery LOS exemption',
+  );
+  await page.screenshot({
+    path: 'docs/screenshots/m3b-artillery-acceptance.png',
+    fullPage: true,
+  });
+  await page.getByLabel('No additional range cap').uncheck();
+  await page.getByLabel('Additional range cap (inclusive)').fill('1');
+  await settled(page);
+  await expect(cell).toHaveClass(/out-of-range/);
+  await expect(cell.locator('.exemption-symbol')).toHaveCount(0);
+  await page.getByLabel('No additional range cap').check();
+  await unit(page, 'Infantry');
+  await at(page, '2', '4');
+  await settled(page);
+  await expect(cell).toHaveClass(/blocked/);
+  await expect(cell.locator('.status-disc')).toHaveCSS(
+    'fill',
+    'rgb(176, 56, 44)',
+  );
+  await expect(cell.locator('.exemption-symbol')).toHaveCount(0);
+  await unit(page, 'Artillery');
+  await at(page, '2', '4');
+  await page
+    .getByRole('button', { name: 'Remove unit only', exact: true })
+    .first()
+    .click();
+  await at(page, '1', '4');
+  await terrain(page, 'Forest');
+  await at(page, '1', '4');
+  await settled(page);
+  await expect(cell).toHaveClass(/requirements-met/);
+  await expect(cell).toHaveAttribute('data-physical-los', 'blocked');
+  await expect(cell.locator('.exemption-symbol')).toHaveText('A');
+  await expect(page.locator('[data-cell="10,4"]')).toHaveClass(/out-of-range/);
+  await expect(
+    page.locator('[data-cell="10,4"] .exemption-symbol'),
+  ).toHaveCount(0);
+  await page.getByLabel('Interaction mode').selectOption('remove-cell');
+  await at(page, '1', '4');
+  await settled(page);
+  await expect(cell).toHaveClass(/rule-invalid/);
+  await expect(cell.locator('.exemption-symbol')).toHaveCount(0);
+  await page.getByLabel('Interaction mode').selectOption('add-cell');
+  await at(page, '40', '40');
+  await settled(page);
+  const failed = page.locator('[data-cell="40,40"]');
+  await expect(failed).toHaveClass(/failed/);
+  await expect(failed.locator('.exemption-symbol')).toHaveCount(0);
+});
+test('populated installation graphics and coordinate toggle work in both orientations without recalculation', async ({
+  page,
+}) => {
+  await ready(page);
+  await expect(
+    page.getByLabel('Coordinate labels', { exact: true }),
+  ).not.toBeChecked();
+  for (const [index, type] of [
+    'Bunker',
+    'Sandbags',
+    'Wire',
+    'Hedgehog',
+    'Sea wall',
+  ].entries()) {
+    await page
+      .getByRole('button', { name: 'Installation palette', exact: true })
+      .click();
+    await page
+      .getByRole('button', { name: `Place ${type}`, exact: true })
+      .click();
+    await at(page, String(index + 2), '2');
+    await at(page, '4', '4');
+    if (index < 3) await at(page, '8', '4');
+  }
+  await terrain(page, 'Hill');
+  await at(page, '4', '4');
+  await unit(page, 'Armor', 'axis');
+  await at(page, '4', '4');
+  await at(page, '8', '4');
+  await settled(page);
+  const before = await page
+    .locator('#batch-status')
+    .getAttribute('data-evaluations');
+  await page.getByLabel('Coordinate labels', { exact: true }).check();
+  await expect(page.locator('[data-cell="4,4"] .coordinate')).toHaveText('4,4');
+  await page.getByLabel('Coordinate labels', { exact: true }).uncheck();
+  await expect(page.locator('[data-cell="4,4"] .coordinate')).toHaveCount(0);
+  for (const orientation of ['pointy', 'flat']) {
+    await page
+      .getByLabel('Presentation', { exact: true })
+      .selectOption(orientation);
+    await page.getByRole('button', { name: 'Fit board', exact: true }).click();
+    await expect(
+      page.locator('[data-cell="4,4"] .installation-glyph'),
+    ).toHaveCount(5);
+    await expect(page.locator('[data-cell="4,4"] .unit-glyph')).toHaveCount(1);
+    // Actual painted bounds include the transformed stroke, not just SVG path boxes.
+    for (const key of ['4,4', '8,4']) {
+      const boxes = await page
+        .locator(`[data-cell="${key}"]`)
+        .evaluate((cell) =>
+          [
+            ...cell.querySelectorAll(
+              '.unit-glyph, .installation-glyph, .status-disc',
+            ),
+          ].map((node) => {
+            if (!(node instanceof SVGGraphicsElement))
+              throw new Error('SVG glyph');
+            const box = node.getBoundingClientRect(),
+              matrix = node.getScreenCTM();
+            if (!matrix) throw new Error('SVG transform');
+            const stroke = node.classList.contains('unit-glyph')
+              ? 0.035
+              : node.classList.contains('installation-glyph')
+                ? 0.06
+                : 0.01;
+            const pad = stroke * Math.hypot(matrix.a, matrix.b);
+            return {
+              left: box.left - pad,
+              right: box.right + pad,
+              top: box.top - pad,
+              bottom: box.bottom + pad,
+            };
+          }),
+        );
+      for (const [index, box] of boxes.entries())
+        for (const other of boxes.slice(index + 1))
+          expect(
+            box.left < other.right &&
+              box.right > other.left &&
+              box.top < other.bottom &&
+              box.bottom > other.top,
+          ).toBe(false);
+    }
+    const single = await page
+      .locator('[data-cell="2,2"] .installation-glyph')
+      .boundingBox();
+    expect(single?.width).toBeGreaterThan(12);
+    await page.screenshot({
+      path: `docs/screenshots/m3b-acceptance-${orientation}.png`,
+      fullPage: true,
+    });
+    await page.getByRole('button', { name: 'Zoom in', exact: true }).click();
+    await expect(page.locator('[data-cell="4,4"] .unit-glyph')).toBeVisible();
+    await page.getByRole('button', { name: 'Zoom out', exact: true }).click();
+  }
+  expect(
+    await page.locator('#batch-status').getAttribute('data-evaluations'),
+  ).toBe(before);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole('button', { name: 'Fit board', exact: true }).click();
+  await page.screenshot({
+    path: 'docs/screenshots/m3b-acceptance-mobile.png',
+    fullPage: true,
+  });
+  await page.getByLabel('Contact policy').selectOption('generic.interior-only');
+  await settled(page);
+  await expect(
+    page.getByLabel('Coordinate labels', { exact: true }),
+  ).toBeChecked();
+  await expect(page.locator('.requirements-met')).toHaveCount(0);
 });

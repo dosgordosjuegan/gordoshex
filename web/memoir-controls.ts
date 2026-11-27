@@ -13,7 +13,7 @@ import { terrainGlyph, unitGlyph, installationGlyph } from './memoir-svg.js';
 import { svgElement } from './svg.js';
 import { button, element, select, input } from './controls.js';
 import { entityLabel } from './memoir-presentation.js';
-import { t } from './format.js';
+import { t, symbols } from './format.js';
 type Edit = (operation: (current: AppState) => AppState) => void;
 function paintButton(
   state: AppState,
@@ -50,6 +50,7 @@ export function syncProfileControls(state: AppState): void {
   select('ruleset').value = state.rulesetId;
   select('mode').value = state.mode;
   select('orientation').value = state.orientation;
+  input('coordinates').checked = state.showCoordinates;
   element('unlimited-label').textContent = t(
     memoir ? 'memoir.no-cap' : 'query.unlimited',
   );
@@ -70,10 +71,21 @@ export function syncProfileControls(state: AppState): void {
   legend.textContent = t('memoir.legend');
   for (const name of ['visible', 'blocked', 'out-of-range']) {
     const label = document.querySelector(`[data-legend="${name}"]`);
-    if (label)
+    if (label) {
+      const swatch = label.previousElementSibling;
+      if (swatch) {
+        swatch.classList.toggle('memoir-legend-swatch', memoir);
+        swatch.textContent =
+          memoir && name === 'visible' ? '✓' : (symbols[name] ?? '!');
+        swatch.classList.toggle(
+          'requirements-met',
+          memoir && name === 'visible',
+        );
+      }
       label.textContent = t(
         memoir ? `memoir.legend.${name}` : `status.${name}`,
       );
+    }
   }
 }
 export function syncRangeControls(state: AppState): void {

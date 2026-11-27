@@ -17,10 +17,17 @@ import { t, symbols, semantic } from './format.js';
 import { svgElement } from './svg.js';
 export { svgElement } from './svg.js';
 import { memoirMode } from './memoir-editing.js';
+import {
+  MEMOIR_STATUS,
+  MEMOIR_EXEMPTION,
+  MEMOIR_COORDINATES,
+} from './memoir-layout.js';
 import { drawMemoirCell } from './memoir-svg.js';
 import {
   memoirFacts,
   artilleryAnnotation,
+  memoirPresentation,
+  showArtilleryBadge,
   entityLabel,
 } from './memoir-presentation.js';
 function labelText(
@@ -73,7 +80,11 @@ export function renderBoard(
     points.push(...polygon);
     const result = results?.get(key),
       status =
-        key === selectionKey(state.origin) ? 'observer' : presentation(result),
+        key === selectionKey(state.origin)
+          ? 'observer'
+          : memoir
+            ? memoirPresentation(result)
+            : presentation(result),
       elements = state.board.cellAt(coordinate)?.elements ?? [];
     const group = svgElement('g', {
       'data-cell': key,
@@ -82,7 +93,7 @@ export function renderBoard(
       role: 'button',
       tabindex: '0',
       class: `cell ${present ? status : 'absent'}${blockers.has(key) ? ' blocker' : ''}${key === selectionKey(state.target) ? ' target' : ''}${key === selectionKey(state.inspected) ? ' inspected' : ''}`,
-      'aria-label': `${key} · ${present ? t(`status.${status}`) : t('inspection.absent')} · ${elements.length} ${t('inspection.contents')}`,
+      'aria-label': `${key} · ${present ? t(status === 'requirements-met' ? 'memoir.status.requirements-met' : `status.${status}`) : t('inspection.absent')} · ${elements.length} ${t('inspection.contents')}`,
     });
     group.append(
       svgElement('polygon', {
@@ -99,29 +110,49 @@ export function renderBoard(
         );
       }
     }
-    group.append(
-      labelText(c.x, c.y + (memoir && present ? 0.8 : 0.1), key, 'coordinate'),
-    );
+    if (state.showCoordinates) {
+      const label = labelText(
+        c.x + (memoir ? MEMOIR_COORDINATES.x : 0),
+        c.y + (memoir && present ? MEMOIR_COORDINATES.y : 0.1),
+        key,
+        'coordinate',
+      );
+      if (memoir && present && key.length > 5) {
+        label.setAttribute('textLength', String(MEMOIR_COORDINATES.maxWidth));
+        label.setAttribute('lengthAdjust', 'spacingAndGlyphs');
+      }
+      group.append(label);
+    }
+    if (memoir && result?.status === 'evaluated') {
+      group.setAttribute('data-physical-los', result.los.status);
+      group.setAttribute('data-range', result.range.status);
+      group.setAttribute(
+        'data-engine-visible',
+        result.visibility.status === 'applicable'
+          ? String(result.visibility.visible)
+          : 'not-applicable',
+      );
+    }
     if (present) {
       if (memoir) {
         group.append(
           svgElement('circle', {
-            cx: String(c.x + 0.56),
-            cy: String(c.y - 0.48),
-            r: '.24',
+            cx: String(c.x + MEMOIR_STATUS.x),
+            cy: String(c.y + MEMOIR_STATUS.y),
+            r: String(MEMOIR_STATUS.r),
             class: 'status-disc',
           }),
         );
       }
       group.append(
         labelText(
-          c.x + (memoir ? 0.56 : 0),
-          c.y - (memoir ? 0.39 : 0.4),
+          c.x + (memoir ? MEMOIR_STATUS.x : 0),
+          c.y + (memoir ? MEMOIR_STATUS.y + 0.08 : -0.4),
           symbols[status] ?? '!',
           'cell-symbol',
         ),
       );
-      if (memoir && artilleryAnnotation(result)) {
+      if (memoir && showArtilleryBadge(result)) {
         group.classList.add('los-exempt');
         group.setAttribute(
           'aria-label',
@@ -129,8 +160,8 @@ export function renderBoard(
         );
         group.append(
           labelText(
-            c.x - 0.57,
-            c.y - 0.42,
+            c.x + MEMOIR_EXEMPTION.x,
+            c.y + MEMOIR_EXEMPTION.y + 0.08,
             t('memoir.exemption-badge'),
             'exemption-symbol',
           ),

@@ -20,8 +20,8 @@ code is not shipped in `browser-dist/`. The driver serves it on local port 4174,
 launches pinned headless Chromium and closes browser/server on completion. The
 same Node driver still supports the original `npm run benchmark:app` workload.
 
-Measured **2026-11-27T15:30:19.526Z**. Source SHA-256:
-`5de105d4df8f653e87f51ec033b5ab58f57c04429f38d66b8eae102bb10dc5ab`. The manifest hashes ordered filenames, a NUL separator
+Measured **2026-11-27T20:44:32.080Z**. Source SHA-256:
+`2f5e40e063adbfe770397a476d6e876e000cfb2593d7e1932a1a6eae179f84ac`. The manifest hashes ordered filenames, a NUL separator
 and file contents: production source/CSS, benchmark entries/driver/config and lockfile.
 Documentation, screenshots and tests are excluded from this identity.
 
@@ -73,15 +73,15 @@ latency gate is imposed in tests.
 
 | Cells | Evaluation median / p95 ms | Presentation DOM/layout median / p95 ms | Two-frame wait median / p95 ms |
 | ----: | -------------------------: | --------------------------------------: | -----------------------------: |
-|   117 |                85.5 / 95.3 |                             25.5 / 28.7 |                    10.6 / 23.8 |
-|   468 |              753.5 / 796.1 |                             94.2 / 97.6 |                    29.1 / 37.7 |
+|   117 |                83.0 / 96.8 |                             25.5 / 32.4 |                    10.5 / 33.5 |
+|   468 |              716.4 / 743.7 |                             74.7 / 86.3 |                    26.5 / 31.6 |
 
 ## Responsiveness decision and limits
 
 The 117-cell configuration is practical for the prototype; the populated 468-cell
 configuration has a substantial synchronous pause. Automatic updates still use the
 accepted 150 ms debounce/revision guards and remove stale verdicts immediately.
-The measured evaluation alone occupies roughly three quarters of a second on this
+The measured evaluation alone occupies roughly 0.72 seconds on this
 machine; presentation adds further work. Debounce consolidates rapid edits but
 cannot keep the main thread interactive during the pass.
 

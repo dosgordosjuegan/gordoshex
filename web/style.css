@@ -666,3 +666,80 @@ input:disabled {
     grid-column: 1/-1;
   }
 }
+/* Memoir colors project range/LOS requirements; generic colors remain unchanged. */
+.cell.memoir-cell.requirements-met > polygon {
+  stroke: #187746;
+  stroke-width: 0.08;
+  stroke-dasharray: none;
+}
+.memoir-cell.requirements-met .status-disc,
+.swatch.requirements-met {
+  fill: #187746;
+  background: #187746;
+  color: #fff;
+  stroke: #0c512e;
+}
+.cell.memoir-cell.requirements-met .cell-symbol {
+  fill: white;
+}
+.cell.memoir-cell.blocked > polygon {
+  stroke: #b0382c;
+  stroke-width: 0.08;
+}
+.memoir-cell.blocked .status-disc {
+  fill: #b0382c;
+  stroke: #7d211c;
+}
+.cell.memoir-cell.blocked .cell-symbol {
+  fill: white;
+}
+.cell.memoir-cell.out-of-range > polygon {
+  fill: #e0e3e8;
+  stroke: #768091;
+}
+.memoir-cell.out-of-range .terrain-glyph {
+  filter: grayscale(1);
+}
+.cell.memoir-cell.observer > polygon {
+  stroke: #07565f;
+  stroke-width: 0.12;
+}
+.cell.memoir-cell.target > polygon {
+  stroke: #123f75;
+  stroke-width: 0.12;
+}
+.cell.memoir-cell.blocker > polygon {
+  stroke: #8e3922;
+  stroke-width: 0.14;
+}
+.cell.memoir-cell:hover > polygon,
+.cell.memoir-cell:focus > polygon {
+  stroke: #c37a1b;
+  stroke-width: 0.13;
+}
+.memoir-cell .coordinate {
+  font-size: 0.16px;
+}
+.memoir-cell .cell-symbol {
+  font-size: 0.25px;
+}
+.cell .exemption-symbol {
+  font-size: 0.25px;
+  font-weight: 800;
+  stroke-width: 0.055;
+}
+.cell .affiliation-symbol,
+.palette-svg .affiliation-symbol {
+  font-size: 0.2px;
+}
+.coordinate-toggle {
+  white-space: nowrap;
+}
+
+.swatch.memoir-legend-swatch.blocked {
+  background: #b0382c;
+  color: #fff;
+}
+.swatch.memoir-legend-swatch.out-of-range {
+  background: #e0e3e8;
+}
