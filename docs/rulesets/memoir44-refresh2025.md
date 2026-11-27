@@ -12,6 +12,10 @@ physical LOS/range inspection, not exhaustive base-game compatibility or an atta
 legality checker. No legacy rules, expansions, scenario overrides or game assets
 are included.
 
+The [M3B graphical editor](../memoir-editor.md) exposes this same supported subset
+without changing adapter semantics. Generic and Memoir modes keep separate session
+boards; see its documentation for painting and artillery presentation.
+
 ## Entity schema
 
 Every board element retains `{ id, kind, properties }`. IDs are globally unique

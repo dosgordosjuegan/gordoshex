@@ -12,6 +12,7 @@
     "playwright.config.ts",
     "browser/**/*.ts",
     "vite.benchmark.config.ts",
-    "benchmarks/browser.ts"
+    "benchmarks/browser.ts",
+    "benchmarks/memoir.ts"
   ]
 }

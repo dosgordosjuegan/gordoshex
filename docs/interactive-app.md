@@ -1,9 +1,10 @@
 # M3A interactive generic visibility calculator
 
-The browser application exposes the three accepted generic rulesets. It is an
+The browser application exposes the three accepted generic rulesets plus the
+[Memoir '44 2025 supported-subset editor](memoir-editor.md). It is an
 English, desktop-first calculator built with native TypeScript, SVG, HTML and CSS.
 No framework, backend, deployment configuration or runtime dependency is added.
-Memoir '44-specific controls and presentation remain M3B; full Spanish coverage
+Memoir controls and presentation are documented separately; full Spanish coverage
 remains M3C. The existing geometry/application libraries retain their standalone
 ESM/declaration build and zero runtime dependencies.
 
@@ -61,7 +62,9 @@ Manual checks:
 6. Disable unlimited and enter range 1: target `(2,0)` has out-of-range styling,
    while inspection still reports blocked physical LOS independently. Invalid
    range input disables evaluation until corrected or unlimited is selected.
-7. Remove the observer or target: only the removed selection is cleared. A missing
+7. Toggle **Coordinate labels** to show/hide exact labels without recalculation.
+   Generic mode defaults on; Memoir defaults off and retains a separate preference.
+8. Remove the observer or target: only the removed selection is cleared. A missing
    observer prevents evaluation. Zero board dimensions produce an editable empty set.
 
 ## Architecture
@@ -81,8 +84,8 @@ Manual checks:
 
 UI imports use public `src/index.ts` and `src/application.ts` entry points. No
 geometry, board, ruleset, visibility or serialization production module was changed.
-The UI supplies an explicit `GENERIC_RULESETS` collection; no dynamic loader or
-Memoir fallback exists. Generic predicates are interpreted only by the existing
+The UI supplies the public `BUILTIN_RULESETS` collection. Generic and Memoir
+workspaces retain separate compatible snapshots; no dynamic loader or fallback exists. Generic predicates are interpreted only by the existing
 rulesets. Results retain full board/context, absent-cell evidence and simultaneous
 incidences. Only the selected target's evidence is expanded in the inspection panel.
 
@@ -128,7 +131,10 @@ board offers `(0,0)` as a seed. It does not attempt to render the infinite absen
 lattice. Holes adjacent to existing cells have dashed outlines and coordinate labels.
 
 Observer, visible, blocked, out-of-range, ruleset-invalid, failed and pending
-states have distinct symbols/outlines as well as color. Out-of-range styling wins
+states have distinct symbols/outlines as well as color. These physical-visibility
+colors apply to generic policies. Memoir uses its separately labeled
+[range/LOS-requirements projection](memoir-editor.md#range-physical-los-and-artillery),
+including green exempt artillery with blocked physical LOS. Out-of-range styling wins
 only for completed clear/blocked LOS; inspection retains both independent facts.
 Failures, invalid/unsupported requests and ruleset-invalid LOS have distinct
 projections and no ordinary blocked/visible verdict. Generic policies cannot
@@ -189,7 +195,7 @@ recovery from invalid inputs. Screenshots are evidence artifacts, not golden tes
 [desktop](screenshots/m3a-desktop.png), [mobile viewport](screenshots/m3a-mobile.png).
 
 Changes are in-memory; reload discards edits. Undo, scenario import/export,
-shareable URLs, deployment, Memoir editing, attack eligibility and final branding
+shareable URLs, deployment, attack eligibility and final branding
 are excluded. Very large relative spans are refused, and large admitted synchronous
 passes still pause interaction. Full Spanish parity and broader browser/device
 accessibility verification remain M3C. No claims are made about legal attacks or

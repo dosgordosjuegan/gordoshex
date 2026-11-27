@@ -8,3 +8,5 @@ benchmarks/automatic-results.json
 docs/geometry.md
 docs/specification.md
 docs/testing.md
+
+benchmarks/memoir-results.json
