@@ -12,7 +12,6 @@ import {
   activateCell,
   generate,
   setRange,
-  setRuleset,
   selectionKey,
   type AppState,
   type Mode,
@@ -29,8 +28,16 @@ import {
   renderEdge,
 } from './controls.js';
 import { integerInput } from './limits.js';
-import { t } from './format.js';
+import { t, semantic } from './format.js';
 import { vertices, frontier } from './display.js';
+import { memoirMode } from './memoir-editing.js';
+import { WorkingBoards } from './workspaces.js';
+import {
+  renderMemoirPalette,
+  renderMemoirContents,
+  syncProfileControls,
+  syncRangeControls,
+} from './memoir-controls.js';
 import { Recalculation, mathematicalInputsChanged } from './recalculation.js';
 const root = document.getElementById('app');
 if (!root) throw new Error('Missing app');
@@ -46,6 +53,7 @@ let state = initialState(),
   selectedEdge: EdgeId | null = null,
   busy = false,
   evaluations = 0;
+const workingBoards = new WorkingBoards(state);
 const interaction = bindBoard(
   svg,
   (a) => attempt(() => change(activateCell(state, a))),
@@ -89,6 +97,7 @@ function change(next: AppState, fit = false): void {
   else render(fit);
 }
 function render(fit = false): void {
+  syncProfileControls(state);
   const focused = document.activeElement,
     focusedCell =
       focused instanceof Element
@@ -119,6 +128,19 @@ function render(fit = false): void {
       : batch?.status === 'unavailable'
         ? t(batch.reason)
         : t('query.pending');
+  const problem =
+    memoirMode(state) && batch?.status === 'complete'
+      ? [...batch.results.values()].find(
+          (value) =>
+            value.status === 'invalid-query-input' ||
+            value.status === 'unsupported-ruleset-or-configuration',
+        )
+      : undefined;
+  element('profile-feedback').hidden = !problem;
+  element('profile-feedback').textContent =
+    problem && 'explanations' in problem
+      ? problem.explanations.map(semantic).join(' ')
+      : '';
   const result =
     state.target && batch?.status === 'complete'
       ? batch.results.get(coordinateKey(state.target))
@@ -126,8 +148,12 @@ function render(fit = false): void {
   renderInspection(element('target-inspection'), state, result);
   const mutate = (operation: (current: AppState) => AppState): void =>
     attempt(() => change(operation(state)));
-  renderContents(state, mutate);
-  renderEdge(state, selectedEdge, mutate);
+  renderMemoirPalette(state, mutate);
+  if (memoirMode(state)) renderMemoirContents(state, mutate);
+  else {
+    renderContents(state, mutate);
+    renderEdge(state, selectedEdge, mutate);
+  }
 }
 const recalculation = new Recalculation(
   evaluateBoard,
@@ -191,12 +217,18 @@ select('mode').addEventListener('change', () => {
     'add-obstacle',
     'remove-obstacle',
     'edge',
+    'paint',
   ];
   const chosen = modes.find((m) => m === mode);
   if (chosen) change({ ...state, mode: chosen });
 });
 select('ruleset').addEventListener('change', () =>
-  attempt(() => change(setRuleset(state, select('ruleset').value))),
+  attempt(() => {
+    const next = workingBoards.switch(state, select('ruleset').value);
+    selectedEdge = null;
+    syncRangeControls(next);
+    change(next, true);
+  }),
 );
 function updateRange(): void {
   attempt(() => {

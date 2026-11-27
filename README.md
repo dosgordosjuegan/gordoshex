@@ -6,9 +6,9 @@ Repository: [dosgordosjuegan/gordoshex](https://github.com/dosgordosjuegan/gordo
 
 The first tool will calculate line of sight and lattice range. The first game-specific adapter supports an explicit subset of Memoir '44 refreshed 2025; see the [approved rules specification](docs/rulesets/memoir44.md) and [adapter API](docs/rulesets/memoir44-refresh2025.md). The interface will support English and Spanish, desktop and mobile browsers, and deployment to GitHub Pages. This is a focused calculator, not a general tabletop simulator.
 
-## Current status: M3A interactive generic calculator for review
+## Current status: M3B Memoir '44 editor for review
 
-The accepted M1 exact geometry engine is joined by immutable board snapshots, pure board editing, axial/offset generators, three generic contact policies, independent range/LOS evaluation and a versioned scenario codec. All modules have zero runtime dependencies. The refreshed-2025 adapter adds categorical elevation, global sided boundary obstructions, exact blocker evidence and intrinsic unit range. The first browser application provides SVG board editing and exact generic visibility inspection; Memoir-specific presentation remains M3B. P1–P9 retain their approved semantics; M2A completes the underlying P10 version-1 scenario schema.
+The accepted M1 exact geometry engine is joined by immutable board snapshots, pure board editing, axial/offset generators, three generic contact policies, independent range/LOS evaluation and a versioned scenario codec. All modules have zero runtime dependencies. The refreshed-2025 adapter adds categorical elevation, global sided boundary obstructions, exact blocker evidence and intrinsic unit range. The first browser application provides SVG board editing and exact generic visibility inspection; the supported Memoir '44 2025 subset now has its own graphical editing workspace. P1–P9 retain their approved semantics; M2A completes the underlying P10 version-1 scenario schema.
 
 | Document                               | Contents                                                                                                |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------- |
@@ -65,6 +65,14 @@ See [application architecture, controls and limits](docs/interactive-app.md),
 [M3A completion report](docs/m3a-report.md). Generated boards/batches are limited
 to 512 cells, with a separate aggregate candidate budget and explicit failures.
 The existing `npm run benchmark` still measures standalone geometry.
+
+Choose **Memoir '44 2025 · supported subset** to edit terrain, installations and
+standard Allied/Axis units. Generic and Memoir modes retain separate working
+boards in memory. Memoir's **No additional range cap** retains intrinsic unit
+range; artillery's exemption is shown separately from blocked physical LOS.
+This is inspection, not attack legality or exhaustive game compatibility. See
+[Memoir editor usage](docs/memoir-editor.md), [M3B performance](docs/m3b-performance.md)
+and [M3B completion evidence](docs/m3b-report.md).
 
 The geometry entry point is `src/index.ts`; `npm run build` produces native ESM and declarations in `dist/`.
 

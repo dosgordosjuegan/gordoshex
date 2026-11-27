@@ -1,9 +1,10 @@
 # M3A interactive generic visibility calculator
 
-The browser application exposes the three accepted generic rulesets. It is an
+The browser application exposes the three accepted generic rulesets plus the
+[Memoir '44 2025 supported-subset editor](memoir-editor.md). It is an
 English, desktop-first calculator built with native TypeScript, SVG, HTML and CSS.
 No framework, backend, deployment configuration or runtime dependency is added.
-Memoir '44-specific controls and presentation remain M3B; full Spanish coverage
+Memoir controls and presentation are documented separately; full Spanish coverage
 remains M3C. The existing geometry/application libraries retain their standalone
 ESM/declaration build and zero runtime dependencies.
 
@@ -81,8 +82,8 @@ Manual checks:
 
 UI imports use public `src/index.ts` and `src/application.ts` entry points. No
 geometry, board, ruleset, visibility or serialization production module was changed.
-The UI supplies an explicit `GENERIC_RULESETS` collection; no dynamic loader or
-Memoir fallback exists. Generic predicates are interpreted only by the existing
+The UI supplies the public `BUILTIN_RULESETS` collection. Generic and Memoir
+workspaces retain separate compatible snapshots; no dynamic loader or fallback exists. Generic predicates are interpreted only by the existing
 rulesets. Results retain full board/context, absent-cell evidence and simultaneous
 incidences. Only the selected target's evidence is expanded in the inspection panel.
 
@@ -189,7 +190,7 @@ recovery from invalid inputs. Screenshots are evidence artifacts, not golden tes
 [desktop](screenshots/m3a-desktop.png), [mobile viewport](screenshots/m3a-mobile.png).
 
 Changes are in-memory; reload discards edits. Undo, scenario import/export,
-shareable URLs, deployment, Memoir editing, attack eligibility and final branding
+shareable URLs, deployment, attack eligibility and final branding
 are excluded. Very large relative spans are refused, and large admitted synchronous
 passes still pause interaction. Full Spanish parity and broader browser/device
 accessibility verification remain M3C. No claims are made about legal attacks or

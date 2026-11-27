@@ -429,3 +429,240 @@ input:disabled {
 #board.panning .edge {
   cursor: grabbing;
 }
+/* Memoir artwork is original geometric iconography; status borders preserve terrain fills. */
+.profile-note {
+  padding: 10px;
+  background: #e8eef8;
+  border-left: 4px solid #536d91;
+  font-size: 12px;
+}
+.palette-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+.palette-tabs button {
+  font-size: 11px;
+  padding: 5px;
+}
+.palette-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+.palette-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  text-align: left;
+  min-height: 42px;
+  padding: 4px;
+  margin: 0;
+}
+.palette-button[aria-pressed='true'],
+.palette-tabs button[aria-pressed='true'] {
+  outline: 2px solid #175e67;
+  background: #e0f3ef;
+}
+.palette-svg {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+}
+.palette-svg path,
+.palette-svg rect,
+.palette-svg ellipse {
+  stroke: #314b45;
+  stroke-width: 0.065;
+  fill: none;
+}
+.palette-svg .terrain-forest path {
+  fill: #99c48c;
+}
+.memoir-cell {
+  --terrain: #edf3df;
+}
+.memoir-cell.terrain-forest {
+  --terrain: #c9dfbd;
+}
+.memoir-cell.terrain-hedgerow {
+  --terrain: #e0e4b8;
+}
+.memoir-cell.terrain-town {
+  --terrain: #e4d4c1;
+}
+.memoir-cell.terrain-church {
+  --terrain: #e9e0cc;
+}
+.memoir-cell.terrain-hill {
+  --terrain: #d9cea9;
+}
+.memoir-cell.terrain-river {
+  --terrain: #c4e0ef;
+}
+.memoir-cell.terrain-ocean {
+  --terrain: #afcddf;
+}
+.memoir-cell.terrain-beach {
+  --terrain: #f1dfab;
+}
+.memoir-cell.terrain-bridge {
+  --terrain: #c8dfdc;
+}
+.cell.memoir-cell > polygon {
+  fill: var(--terrain);
+  stroke: #6c8173;
+  stroke-width: 0.04;
+}
+.cell.memoir-cell.visible > polygon {
+  stroke: #3b8a70;
+}
+.cell.memoir-cell.blocked > polygon {
+  stroke: #a4472b;
+  stroke-dasharray: 0.09 0.04;
+}
+.cell.memoir-cell.out-of-range > polygon {
+  stroke: #66769b;
+  stroke-dasharray: 0.12 0.06;
+}
+.cell.memoir-cell.pending > polygon {
+  stroke-dasharray: 0.05 0.08;
+}
+.cell.memoir-cell.observer > polygon {
+  stroke: #07565f;
+  stroke-width: 0.12;
+}
+.cell.memoir-cell.target > polygon {
+  stroke: #123f75;
+  stroke-width: 0.12;
+}
+.cell.memoir-cell.blocker > polygon {
+  stroke: #8e3922;
+  stroke-width: 0.14;
+}
+.cell.memoir-cell.rule-invalid > polygon,
+.cell.memoir-cell.failed > polygon,
+.cell.memoir-cell.invalid-query > polygon {
+  stroke: #854b82;
+  stroke-width: 0.1;
+  stroke-dasharray: 0.04 0.06;
+}
+.cell.memoir-cell:hover > polygon,
+.cell.memoir-cell:focus > polygon {
+  stroke: #c37a1b;
+  stroke-width: 0.13;
+}
+.memoir-graphics {
+  pointer-events: none;
+}
+.memoir-graphics path,
+.memoir-graphics rect,
+.memoir-graphics ellipse {
+  fill: none;
+  stroke: #496448;
+  stroke-width: 0.055;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.memoir-graphics .terrain-forest path {
+  fill: #a2c494;
+}
+.memoir-graphics .terrain-river path,
+.memoir-graphics .terrain-ocean path {
+  stroke: #3875a0;
+}
+.memoir-graphics .unit-glyph rect,
+.palette-svg .unit-glyph rect {
+  fill: #e4efff;
+  stroke: #184c7a;
+  stroke-width: 0.07;
+}
+.memoir-graphics .side-axis rect,
+.palette-svg .side-axis rect {
+  fill: #ffe8dd;
+  stroke: #85391f;
+}
+.memoir-graphics .unit-glyph path,
+.memoir-graphics .unit-glyph ellipse {
+  stroke: #162f48;
+  stroke-width: 0.06;
+}
+.memoir-graphics .unit-glyph circle,
+.palette-svg .unit-glyph circle {
+  fill: #162f48;
+}
+.cell .affiliation-symbol,
+.palette-svg .affiliation-symbol {
+  font-size: 0.23px;
+  fill: #18323d;
+}
+.installation-glyph path,
+.installation-glyph rect {
+  stroke: #433e38;
+  stroke-width: 0.12;
+  fill: #e6ded0;
+}
+.memoir-cell .coordinate {
+  font-size: 0.2px;
+}
+.memoir-cell .cell-symbol {
+  font-size: 0.35px;
+}
+.status-disc {
+  fill: #f5f7f6;
+  stroke: #58747a;
+  stroke-width: 0.02;
+  pointer-events: none;
+}
+.blocked .status-disc {
+  fill: #f1c9b9;
+}
+.visible .status-disc {
+  fill: #d8ece2;
+}
+.out-of-range .status-disc {
+  fill: #dce2ea;
+}
+.rule-invalid .status-disc,
+.failed .status-disc,
+.invalid-query .status-disc {
+  fill: #edd3ee;
+}
+.observer .status-disc {
+  fill: #9fddd5;
+}
+.cell .exemption-symbol {
+  font-size: 0.27px;
+  font-weight: bold;
+  fill: #603483;
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 0.06;
+  pointer-events: none;
+}
+.memoir-sightline {
+  stroke-width: 0.04;
+  opacity: 0.8;
+}
+.artillery-note {
+  border: 2px solid #7d5893;
+  padding: 8px;
+  background: #f3eafa;
+}
+.inspection pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 11px;
+}
+#profile-feedback {
+  padding: 10px;
+  border-left: 4px solid #a4472b;
+  background: #fff0e7;
+  font-size: 12px;
+}
+@media (max-width: 700px) {
+  #memoir-palette {
+    grid-column: 1/-1;
+  }
+}

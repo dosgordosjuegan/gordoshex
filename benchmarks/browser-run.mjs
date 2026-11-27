@@ -18,16 +18,14 @@ const server = spawn(
   ],
   { stdio: 'pipe' },
 );
+const memoir = process.argv[2] === 'memoir';
+const route = memoir ? 'memoir.html' : 'browser.html';
 let browser;
 try {
   for (let n = 0; n < 100; n++) {
     try {
       if (
-        (
-          await globalThis.fetch(
-            'http://127.0.0.1:4174/benchmarks/browser.html',
-          )
-        ).ok
+        (await globalThis.fetch(`http://127.0.0.1:4174/benchmarks/${route}`)).ok
       )
         break;
     } catch {
@@ -42,7 +40,7 @@ try {
   page.on('pageerror', (error) => {
     throw error;
   });
-  await page.goto('http://127.0.0.1:4174/benchmarks/browser.html');
+  await page.goto(`http://127.0.0.1:4174/benchmarks/${route}`);
   await page.waitForFunction(
     () => globalThis.document.body.dataset.done === 'true',
     {},
@@ -58,6 +56,8 @@ try {
         files.push(`${dir}/${entry}`);
   files.push(
     'benchmarks/browser.ts',
+    'benchmarks/memoir.ts',
+    'benchmarks/memoir.html',
     'benchmarks/browser-run.mjs',
     'benchmarks/browser.html',
     'vite.benchmark.config.ts',
@@ -77,12 +77,14 @@ try {
       p95: sorted[Math.ceil(0.95 * sorted.length) - 1],
     };
   };
-  for (const dataset of result.data)
+  for (const dataset of result.data) {
+    const presentation = memoir ? 'presentationMs' : 'renderMs';
     dataset.summary = {
       evaluationMs: summarize(dataset.samples.map((s) => s.evaluationMs)),
-      renderMs: summarize(dataset.samples.map((s) => s.renderMs)),
+      [presentation]: summarize(dataset.samples.map((s) => s[presentation])),
       twoFrameMs: summarize(dataset.samples.map((s) => s.twoFrameMs)),
     };
+  }
   const output = {
     metadata: {
       timestamp: new Date().toISOString(),
@@ -101,7 +103,9 @@ try {
     },
   };
   await writeFile(
-    'benchmarks/browser-results.json',
+    memoir
+      ? 'benchmarks/memoir-results.json'
+      : 'benchmarks/browser-results.json',
     JSON.stringify(output, null, 2) + '\n',
   );
   console.log(

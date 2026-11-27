@@ -14,11 +14,17 @@ import {
   addEdgeFeature,
   removeEdgeFeature,
   rectangle,
-  GENERIC_RULESETS,
+  BUILTIN_RULESETS,
   type BoardSnapshot,
   type Range,
   type RectangleLayout,
 } from '../src/application.js';
+import {
+  memoirMode,
+  paintMemoir,
+  type MemoirBrush,
+  type Affiliation,
+} from './memoir-editing.js';
 import {
   dimensions,
   MAX_CELLS,
@@ -32,8 +38,12 @@ export type Mode =
   | 'remove-cell'
   | 'add-obstacle'
   | 'remove-obstacle'
-  | 'edge';
+  | 'edge'
+  | 'paint';
 export interface AppState {
+  readonly paletteTab: 'terrain' | 'unit' | 'installation';
+  readonly brush: MemoirBrush;
+  readonly affiliation: Affiliation;
   readonly board: BoardSnapshot;
   readonly origin: Axial | null;
   readonly target: Axial | null;
@@ -68,6 +78,9 @@ export function initialState(): AppState {
   );
   return {
     board,
+    brush: { kind: 'terrain', type: 'forest' },
+    affiliation: 'allies',
+    paletteTab: 'terrain',
     origin: axial(0n, 0n),
     target: axial(2n, 0n),
     inspected: axial(2n, 0n),
@@ -84,8 +97,10 @@ export function setRange(state: AppState, range: Range): AppState {
   return { ...state, range };
 }
 export function setRuleset(state: AppState, id: string): AppState {
-  if (!GENERIC_RULESETS.some((r) => r.id === id))
+  if (!BUILTIN_RULESETS.some((r) => r.id === id))
     throw new Error('input.ruleset');
+  if (memoirMode(state) !== memoirMode({ rulesetId: id }))
+    throw new Error('input.switch-workspace');
   return { ...state, rulesetId: id };
 }
 export function addGeneric(
@@ -93,6 +108,7 @@ export function addGeneric(
   coordinate: Axial,
   kind: 'obstacle' | 'marker',
 ): AppState {
+  if (memoirMode(state)) throw new Error('input.generic-mode');
   const cell = state.board.cellAt(coordinate);
   if (!cell) throw new Error('input.absent');
   if (cell.elements.length >= MAX_ELEMENTS_PER_CELL)
@@ -135,6 +151,7 @@ export function editEdge(
   edge: EdgeId,
   removeId?: string,
 ): AppState {
+  if (memoirMode(state)) throw new Error('memoir44.unsupported-edge-features');
   if (removeId)
     return { ...state, board: removeEdgeFeature(state.board, edge, removeId) };
   if (state.board.featuresAt(edge).length >= MAX_EDGE_FEATURES)
@@ -153,6 +170,8 @@ export function activateCell(state: AppState, coordinate: Axial): AppState {
   const exists = state.board.hasCell(coordinate),
     selected = { ...state, inspected: coordinate };
   switch (state.mode) {
+    case 'paint':
+      return paintMemoir(selected, coordinate);
     case 'inspect':
       return { ...selected, target: exists ? coordinate : state.target };
     case 'observer':

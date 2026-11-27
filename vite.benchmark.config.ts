@@ -4,6 +4,8 @@ export default defineConfig({
   build: {
     outDir: 'benchmark-dist',
     target: 'es2022',
-    rolldownOptions: { input: 'benchmarks/browser.html' },
+    rolldownOptions: {
+      input: ['benchmarks/browser.html', 'benchmarks/memoir.html'],
+    },
   },
 });

@@ -14,15 +14,15 @@ import { selectionKey } from './state.js';
 import { blockerKeys, presentation, type Batch } from './evaluation.js';
 import { center, displayPoint, vertices, frontier, frame } from './display.js';
 import { t, symbols, semantic } from './format.js';
-export function svgElement<K extends keyof SVGElementTagNameMap>(
-  tag: K,
-  attributes: Record<string, string> = {},
-): SVGElementTagNameMap[K] {
-  const node = document.createElementNS('http://www.w3.org/2000/svg', tag);
-  for (const [key, value] of Object.entries(attributes))
-    node.setAttribute(key, value);
-  return node;
-}
+import { svgElement } from './svg.js';
+export { svgElement } from './svg.js';
+import { memoirMode } from './memoir-editing.js';
+import { drawMemoirCell } from './memoir-svg.js';
+import {
+  memoirFacts,
+  artilleryAnnotation,
+  entityLabel,
+} from './memoir-presentation.js';
 function labelText(
   x: number,
   y: number,
@@ -48,6 +48,7 @@ export function renderBoard(
   batch: Batch | null,
   selectedEdge: EdgeId | null,
 ): RenderedBoard {
+  const memoir = memoirMode(state);
   const origin = state.board.cells[0]?.coordinate ?? axial(0n, 0n),
     missing = frontier(state.board),
     results = batch?.status === 'complete' ? batch.results : undefined;
@@ -88,13 +89,55 @@ export function renderBoard(
         points: polygon.map((p) => `${p.x},${p.y}`).join(' '),
       }),
     );
-    group.append(labelText(c.x, c.y + 0.1, key, 'coordinate'));
+    if (memoir && present) {
+      const cell = state.board.cellAt(coordinate);
+      if (cell) {
+        const description = drawMemoirCell(group, cell, c.x, c.y);
+        group.setAttribute(
+          'aria-label',
+          `${group.getAttribute('aria-label')} · ${description}`,
+        );
+      }
+    }
+    group.append(
+      labelText(c.x, c.y + (memoir && present ? 0.8 : 0.1), key, 'coordinate'),
+    );
     if (present) {
+      if (memoir) {
+        group.append(
+          svgElement('circle', {
+            cx: String(c.x + 0.56),
+            cy: String(c.y - 0.48),
+            r: '.24',
+            class: 'status-disc',
+          }),
+        );
+      }
       group.append(
-        labelText(c.x, c.y - 0.4, symbols[status] ?? '!', 'cell-symbol'),
+        labelText(
+          c.x + (memoir ? 0.56 : 0),
+          c.y - (memoir ? 0.39 : 0.4),
+          symbols[status] ?? '!',
+          'cell-symbol',
+        ),
       );
+      if (memoir && artilleryAnnotation(result)) {
+        group.classList.add('los-exempt');
+        group.setAttribute(
+          'aria-label',
+          `${group.getAttribute('aria-label')} · ${t('memoir.artillery-note')}`,
+        );
+        group.append(
+          labelText(
+            c.x - 0.57,
+            c.y - 0.42,
+            t('memoir.exemption-badge'),
+            'exemption-symbol',
+          ),
+        );
+      }
       const count = elements.filter((e) => e.kind === 'obstacle').length;
-      if (count)
+      if (count && !memoir)
         group.append(
           labelText(
             c.x,
@@ -107,7 +150,7 @@ export function renderBoard(
     root.append(group);
   }
   const edges = new Map<string, EdgeId>();
-  for (const cell of state.board.cells)
+  for (const cell of memoir ? [] : state.board.cells)
     for (const direction of DIRECTIONS) {
       const edge = localEdge(cell.coordinate, direction);
       edges.set(edge.key, edge);
@@ -149,7 +192,7 @@ export function renderBoard(
         y1: String(a.y),
         x2: String(b.x),
         y2: String(b.y),
-        class: 'sightline',
+        class: memoir ? 'sightline memoir-sightline' : 'sightline',
       }),
     );
   }
@@ -202,11 +245,20 @@ export function renderInspection(
     ),
     text('p', `${t('inspection.los')}: ${t(`status.${result.los.status}`)}`),
   );
-  for (const m of [...result.range.explanations, ...result.los.explanations])
-    panel.append(text('p', semantic(m)));
-  panel.append(text('h3', t('inspection.evidence')));
+  const memoir = memoirMode(state);
+  if (memoir) appendMemoirSummary(panel, result);
+  else
+    for (const m of [...result.range.explanations, ...result.los.explanations])
+      panel.append(text('p', semantic(m)));
+  const evidencePanel = memoir ? document.createElement('details') : panel;
+  if (memoir) {
+    evidencePanel.id = 'exact-evidence';
+    evidencePanel.append(text('summary', t('memoir.exact')));
+    panel.append(evidencePanel);
+  }
+  evidencePanel.append(text('h3', t('inspection.evidence')));
   if (!result.los.evidence.length)
-    panel.append(text('p', t('inspection.no-evidence')));
+    evidencePanel.append(text('p', t('inspection.no-evidence')));
   for (const evidence of result.los.evidence) {
     const location = evidence.location,
       where =
@@ -218,7 +270,7 @@ export function renderInspection(
       `${where} · ${t(`contact.${evidence.effect}`)} · ${t(`contact.${evidence.contact.kind}`)} [${rationalKey(evidence.contact.entry)}, ${rationalKey(evidence.contact.exit)}]${'side' in evidence.contact ? ` · ${t('contact.side')} ${evidence.contact.side}` : ''} · ${semantic(evidence.reason)}`,
     );
     row.className = `evidence ${evidence.effect}`;
-    panel.append(row);
+    evidencePanel.append(row);
   }
   const contacts = document.createElement('details');
   contacts.append(text('summary', t('inspection.geometry')));
@@ -241,4 +293,69 @@ export function renderInspection(
         ),
       );
   panel.append(events);
+}
+
+function appendMemoirSummary(
+  panel: HTMLElement,
+  result: Extract<VisibilityResult, { status: 'evaluated' }>,
+): void {
+  const facts = memoirFacts(result);
+  if (facts) {
+    for (const [label, value] of [
+      ['memoir.unit-label', t(`memoir.unit.${facts.unitType}`)],
+      ['memoir.intrinsic', facts.intrinsic],
+      [
+        'memoir.range-cap',
+        facts.cap === 'unlimited' ? t('memoir.no-cap') : facts.cap,
+      ],
+      ['memoir.effective', facts.effective],
+      [
+        'memoir.los-required',
+        t(facts.losRequired ? 'memoir.required' : 'memoir.exempt'),
+      ],
+    ])
+      panel.append(text('p', `${t(label ?? '')}: ${value}`));
+  }
+  if (artilleryAnnotation(result)) {
+    const note = text('p', t('memoir.artillery-note'));
+    note.className = 'artillery-note';
+    panel.append(note);
+  }
+  panel.append(text('h3', t('memoir.summary')));
+  for (const message of result.los.explanations)
+    panel.append(text('p', semantic(message)));
+  const reasons = new Set<string>();
+  for (const evidence of result.los.evidence) {
+    if (!reasons.has(evidence.reason.code)) {
+      panel.append(text('p', semantic(evidence.reason)));
+      reasons.add(evidence.reason.code);
+    }
+    if (evidence.effect === 'blocking' || evidence.effect === 'invalidating') {
+      const location = evidence.location;
+      if (location.kind === 'cell') {
+        const entity = result.context.board
+          .cellAt(location.coordinate)
+          ?.elements.find((e) => e.id === location.elementId);
+        const row = text(
+          'p',
+          `${coordinateKey(location.coordinate)} · ${entity ? entityLabel(entity) : t('inspection.absent')}${location.elementId ? ` · ${location.elementId}` : ''}`,
+        );
+        row.className = `evidence ${evidence.effect}`;
+        panel.append(row);
+      }
+    }
+  }
+  const raw = document.createElement('details');
+  raw.append(
+    text('summary', t('memoir.raw')),
+    text(
+      'pre',
+      JSON.stringify(
+        [...result.range.explanations, ...result.los.explanations],
+        null,
+        2,
+      ),
+    ),
+  );
+  panel.append(raw);
 }

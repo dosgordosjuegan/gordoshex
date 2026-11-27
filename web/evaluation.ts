@@ -6,7 +6,7 @@ import {
 } from '../src/index.js';
 import {
   evaluateVisibility,
-  GENERIC_RULESETS,
+  BUILTIN_RULESETS,
   type VisibilityResult,
 } from '../src/application.js';
 import { MAX_BATCH_CANDIDATES, MAX_CELLS } from './limits.js';
@@ -47,7 +47,7 @@ export function evaluateBoard(
           ruleset: { id: state.rulesetId, version: '1', configuration: {} },
           maxCandidates,
         },
-        GENERIC_RULESETS,
+        BUILTIN_RULESETS,
       ),
     );
   return {

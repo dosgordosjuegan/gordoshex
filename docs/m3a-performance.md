@@ -18,7 +18,7 @@ ES2022 target, production modules and CSS as the application, then starts a loca
 preview on port 4174 and runs headless Chromium. Benchmark-only code is not shipped
 in `browser-dist/`. The runner closes its browser and server on completion.
 
-Measured **2026-11-26T23:11:23.963Z**, Linux 7.0.0-44-generic x64 on Ubuntu 26.04.1,
+Measured **2026-11-27T15:29:51.491Z**, Linux 7.0.0-44-generic x64 on Ubuntu 26.04.1,
 Intel Core i7-2600 @ 3.40 GHz, 8 logical CPUs, 16,130,686,976 bytes physical RAM.
 Node **22.13.1**, npm **10.9.2**, Vite **8.4.0**, Playwright **1.65.1**, Chromium
 **159.0.8154.6**. Viewport 1440 × 1000, device pixel ratio 1; SVG 1100 × 750.
@@ -26,7 +26,7 @@ No CPU throttling or forced garbage collection. Headless results do not establis
 physical mobile-device performance.
 
 Source snapshot SHA-256:
-`9e444f33c168adcfc74d527a9f762b2f61a0b6cc3afd1e7db6d4955d00aeb6d9`.
+`5de105d4df8f653e87f51ec033b5ab58f57c04429f38d66b8eae102bb10dc5ab`.
 The ordered source filenames, NUL separator and contents are hashed; the raw file
 lists all inputs, including production modules, CSS, benchmark code/configuration
 and lockfile. Documentation, screenshots and tests are outside that identity.
@@ -67,8 +67,8 @@ assertions are imposed in tests.
 
 | Board   | Queries | Conservative candidates total | Evaluation median / p95 ms | SVG DOM/layout median / p95 ms | Two-frame wait median / p95 ms |
 | ------- | ------: | ----------------------------: | -------------------------: | -----------------------------: | -----------------------------: |
-| 13 × 9  |     117 |                         1,757 |                47.2 / 56.4 |                    17.0 / 18.9 |                    13.6 / 19.2 |
-| 26 × 18 |     468 |                        20,525 |              326.5 / 353.3 |                    54.9 / 60.3 |                    24.6 / 29.9 |
+| 13 × 9  |     117 |                         1,757 |                48.5 / 59.8 |                    18.0 / 19.7 |                    16.2 / 19.1 |
+| 26 × 18 |     468 |                        20,525 |              326.5 / 337.4 |                    55.7 / 61.8 |                    16.4 / 31.0 |
 
 ## Limits and recommendation
 
@@ -93,6 +93,9 @@ smallest next change to measure if the observed pause is unacceptable.
 The separate [geometry baseline](performance.md) was rerun for the original M3A
 tooling/config changes. This usability correction changes no mathematical production
 code or geometry benchmark inputs.
+
+Refreshed during M3B after shared UI changes. Populated Memoir workloads use a
+separate [presentation/evaluation measurement](m3b-performance.md).
 
 ## Automatic input-to-result responsiveness
 
@@ -136,17 +139,16 @@ checks complete mathematical results. No stale result is accepted as completion.
 
 | Cells | Pending DOM median / p95 ms | Running DOM median / p95 ms | Complete DOM median / p95 ms | Two-frame completion median / p95 ms |
 | ----: | --------------------------: | --------------------------: | ---------------------------: | -----------------------------------: |
-|   117 |                 11.5 / 14.2 |               169.5 / 171.3 |                273.4 / 280.1 |                        287.1 / 292.9 |
-|   468 |                 38.4 / 40.1 |               192.1 / 200.0 |                602.0 / 626.7 |                        637.4 / 664.5 |
+|   117 |                 12.3 / 12.9 |               168.6 / 183.2 |                269.2 / 277.1 |                        282.3 / 289.6 |
+|   468 |                 39.8 / 52.0 |               191.2 / 199.2 |                630.9 / 644.0 |                        672.1 / 682.6 |
 
-Measured **2026-11-26T23:11:09.718Z**. Source SHA-256:
-`bb3a848ebe9d429e5179b419c09aaacf31c992c9d8fc6a0c67fc45219d297451`. The manifest hashes production
+Measured **2026-11-27T15:30:35.652Z**. Source SHA-256:
+`c91994ace707f35dccb583a5f68f7458bec26e46669a8e1ec429b7d3de4c1b46`. The manifest hashes production
 modules/CSS, the driver, app HTML/Vite configuration and lockfile.
 
-A representative 117-cell edit completes in about 273.4 ms; 468 cells take about
-602.0 ms (637.4 ms including the two-frame observation). Pending feedback arrives
-synchronously in about 11.5 / 38.4 ms on this machine. The larger automatic update
-remains noticeable and includes a several-hundred-millisecond synchronous pause.
-The debounce prevents repeated passes while edits arrive rapidly, and revision
-guards protect publication; neither is a responsiveness guarantee. Workers,
-caching and geometry optimization remain deferred.
+A representative generic 117-cell edit completes in 269.2 ms median;
+468 cells take 630.9 ms (672.1 ms including the two-frame observation).
+Pending feedback arrives synchronously in 12.3 / 39.8 ms median on this machine.
+The larger automatic update remains noticeable. Debouncing prevents repeated passes
+while edits arrive rapidly and revision guards protect publication; neither is a
+responsiveness guarantee. Workers, caching and geometry optimization remain deferred.
