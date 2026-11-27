@@ -6,9 +6,9 @@ Repository: [dosgordosjuegan/gordoshex](https://github.com/dosgordosjuegan/gordo
 
 The first tool will calculate line of sight and lattice range. The first game-specific adapter supports an explicit subset of Memoir '44 refreshed 2025; see the [approved rules specification](docs/rulesets/memoir44.md) and [adapter API](docs/rulesets/memoir44-refresh2025.md). The interface will support English and Spanish, desktop and mobile browsers, and deployment to GitHub Pages. This is a focused calculator, not a general tabletop simulator.
 
-## Current status: M2B.2 refreshed-2025 adapter for review
+## Current status: M3A interactive generic calculator for review
 
-The accepted M1 exact geometry engine is joined by immutable board snapshots, pure board editing, axial/offset generators, three generic contact policies, independent range/LOS evaluation and a versioned scenario codec. All modules have zero runtime dependencies. The refreshed-2025 adapter adds categorical elevation, global sided boundary obstructions, exact blocker evidence and intrinsic unit range. Rendering and the browser application remain future work. P1–P9 retain their approved semantics; M2A completes the underlying P10 version-1 scenario schema.
+The accepted M1 exact geometry engine is joined by immutable board snapshots, pure board editing, axial/offset generators, three generic contact policies, independent range/LOS evaluation and a versioned scenario codec. All modules have zero runtime dependencies. The refreshed-2025 adapter adds categorical elevation, global sided boundary obstructions, exact blocker evidence and intrinsic unit range. The first browser application provides SVG board editing and exact generic visibility inspection; Memoir-specific presentation remains M3B. P1–P9 retain their approved semantics; M2A completes the underlying P10 version-1 scenario schema.
 
 | Document                               | Contents                                                                                                |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------- |
@@ -34,14 +34,37 @@ Boards will be arbitrary finite subsets of an infinite axial hexagonal lattice, 
 | M3        | Interactive graphical application in English and Spanish     |
 | M4        | Publication on GitHub Pages and user/developer documentation |
 
-Use Node.js 22.13.1 and npm 10.9.2:
+Use Node.js 22.13.1 and npm 10.9.2. Launch the calculator locally:
 
 ```sh
 nvm use
 npm ci
-npm run check
-npm run benchmark
+npm run dev -- --host 127.0.0.1
 ```
+
+Open the URL printed by Vite, normally `http://127.0.0.1:5173`. The initial
+13 × 9 staggered board is a generic example, not an official game battlefield.
+Choose an editing/inspection mode. Board, observer, policy and range edits
+automatically recalculate after a 150 ms debounce; **Evaluate all targets** remains
+available to refresh immediately. Drag from any cell, edge or background to pan
+(left/middle button, Space + drag, or touch); stationary clicks activate the mode. The target panel retains independent range,
+LOS, exact intervals and every blocker. Both orientations, zoom/pan, cell stacks
+and ignored shared-edge markers are supported. English is available in M3A.
+
+```sh
+npm run check             # Types, all unit/property/oracle tests, lint, format, libraries
+npm run build:app         # Production browser build in browser-dist/
+npm run preview -- --port 4173
+npx playwright install chromium
+npm run test:browser      # Actual Chromium tests against the production build
+npm run benchmark:app     # Reproducible whole-board evaluation and SVG measurements
+```
+
+See [application architecture, controls and limits](docs/interactive-app.md),
+[measured browser performance](docs/m3a-performance.md), and the
+[M3A completion report](docs/m3a-report.md). Generated boards/batches are limited
+to 512 cells, with a separate aggregate candidate budget and explicit failures.
+The existing `npm run benchmark` still measures standalone geometry.
 
 The geometry entry point is `src/index.ts`; `npm run build` produces native ESM and declarations in `dist/`.
 
