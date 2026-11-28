@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "timestamp": "2026-11-27T20:44:48.062Z",
-    "sourceSha256": "1ba651425dcfe2c9a53efebc6397f56d042051a092c97a009697736f8d3bd7f4",
+    "timestamp": "2026-11-28T12:20:46.097Z",
+    "sourceSha256": "580f72de92330dff6cf5574167cf19fe6233c0050a3aea456c6061dc48abdc23",
     "sourceFiles": [
       "benchmarks/automatic-run.mjs",
       "index.html",
@@ -41,7 +41,9 @@
       "web/controls.ts",
       "web/display.ts",
       "web/evaluation.ts",
+      "web/focus.ts",
       "web/format.ts",
+      "web/i18n.ts",
       "web/interaction.ts",
       "web/limits.ts",
       "web/main.ts",
@@ -51,7 +53,9 @@
       "web/memoir-presentation.ts",
       "web/memoir-svg.ts",
       "web/messages/en.ts",
+      "web/messages/es.ts",
       "web/messages/memoir-en.ts",
+      "web/messages/memoir-es.ts",
       "web/recalculation.ts",
       "web/render.ts",
       "web/state.ts",
@@ -122,111 +126,111 @@
       "samples": [
         {
           "radius": 2,
-          "pendingMs": 11.399999976158142,
-          "runningMs": 175.5999999642372,
-          "completeMs": 270.80000001192093,
-          "twoFrameCompleteMs": 283.19999998807907,
-          "status": "Evaluation complete · Evaluation milliseconds: 67.4 · Conservative candidates: 1757",
+          "pendingMs": 14,
+          "runningMs": 163.29999995231628,
+          "completeMs": 291.39999997615814,
+          "twoFrameCompleteMs": 305,
+          "status": "Evaluation complete · Evaluation milliseconds: 103.0 · Conservative candidates: 1757",
           "evaluations": 1,
-          "checksum": "213146f6cad83295c08e979d3c5bc060b824ab8039f5184f7db16dfa24a170d2"
+          "checksum": "e420aad30774db19054a02e8bb0d2139b3de4c9ae409257e7893b86cb420d660"
         },
         {
           "radius": 3,
-          "pendingMs": 12.100000023841858,
-          "runningMs": 171.39999997615814,
-          "completeMs": 274.69999998807907,
-          "twoFrameCompleteMs": 287.89999997615814,
-          "status": "Evaluation complete · Evaluation milliseconds: 74.5 · Conservative candidates: 1757",
+          "pendingMs": 14.300000011920929,
+          "runningMs": 163.5999999642372,
+          "completeMs": 346.30000001192093,
+          "twoFrameCompleteMs": 364.19999998807907,
+          "status": "Evaluation complete · Evaluation milliseconds: 153.3 · Conservative candidates: 1757",
           "evaluations": 1,
-          "checksum": "2e34ff8146e1970118c8fe50bf35f2a23995f92a1f5908e1689b65ef73a69e57"
+          "checksum": "e6aa86927cccb00ad845a94c671b69c40b891c49859c828615786f58eab1d043"
         },
         {
           "radius": 2,
           "pendingMs": 12.300000011920929,
-          "runningMs": 169.80000001192093,
-          "completeMs": 282.4000000357628,
-          "twoFrameCompleteMs": 295.10000002384186,
-          "status": "Evaluation complete · Evaluation milliseconds: 81.0 · Conservative candidates: 1757",
+          "runningMs": 161.39999997615814,
+          "completeMs": 284.80000001192093,
+          "twoFrameCompleteMs": 297.30000001192093,
+          "status": "Evaluation complete · Evaluation milliseconds: 101.5 · Conservative candidates: 1757",
           "evaluations": 1,
-          "checksum": "213146f6cad83295c08e979d3c5bc060b824ab8039f5184f7db16dfa24a170d2"
+          "checksum": "e420aad30774db19054a02e8bb0d2139b3de4c9ae409257e7893b86cb420d660"
         },
         {
           "radius": 3,
-          "pendingMs": 10.5,
-          "runningMs": 172,
-          "completeMs": 266.5,
-          "twoFrameCompleteMs": 280.19999998807907,
-          "status": "Evaluation complete · Evaluation milliseconds: 63.7 · Conservative candidates: 1757",
+          "pendingMs": 11.599999964237213,
+          "runningMs": 161.30000001192093,
+          "completeMs": 288.30000001192093,
+          "twoFrameCompleteMs": 307.39999997615814,
+          "status": "Evaluation complete · Evaluation milliseconds: 106.0 · Conservative candidates: 1757",
           "evaluations": 1,
-          "checksum": "2e34ff8146e1970118c8fe50bf35f2a23995f92a1f5908e1689b65ef73a69e57"
+          "checksum": "e6aa86927cccb00ad845a94c671b69c40b891c49859c828615786f58eab1d043"
         },
         {
           "radius": 2,
-          "pendingMs": 10.5,
-          "runningMs": 171.5,
-          "completeMs": 272.30000001192093,
-          "twoFrameCompleteMs": 286.60000002384186,
-          "status": "Evaluation complete · Evaluation milliseconds: 65.2 · Conservative candidates: 1757",
+          "pendingMs": 11,
+          "runningMs": 162.30000001192093,
+          "completeMs": 281.69999998807907,
+          "twoFrameCompleteMs": 296.5999999642372,
+          "status": "Evaluation complete · Evaluation milliseconds: 97.7 · Conservative candidates: 1757",
           "evaluations": 1,
-          "checksum": "213146f6cad83295c08e979d3c5bc060b824ab8039f5184f7db16dfa24a170d2"
+          "checksum": "e420aad30774db19054a02e8bb0d2139b3de4c9ae409257e7893b86cb420d660"
         },
         {
           "radius": 3,
-          "pendingMs": 13.5,
-          "runningMs": 165.69999998807907,
-          "completeMs": 265.19999998807907,
-          "twoFrameCompleteMs": 277,
-          "status": "Evaluation complete · Evaluation milliseconds: 70.4 · Conservative candidates: 1757",
+          "pendingMs": 11.400000035762787,
+          "runningMs": 161.10000002384186,
+          "completeMs": 271.5,
+          "twoFrameCompleteMs": 287,
+          "status": "Evaluation complete · Evaluation milliseconds: 89.5 · Conservative candidates: 1757",
           "evaluations": 1,
-          "checksum": "2e34ff8146e1970118c8fe50bf35f2a23995f92a1f5908e1689b65ef73a69e57"
+          "checksum": "e6aa86927cccb00ad845a94c671b69c40b891c49859c828615786f58eab1d043"
         },
         {
           "radius": 2,
-          "pendingMs": 14.699999988079071,
-          "runningMs": 166.30000001192093,
-          "completeMs": 255.39999997615814,
-          "twoFrameCompleteMs": 268.80000001192093,
-          "status": "Evaluation complete · Evaluation milliseconds: 61.5 · Conservative candidates: 1757",
+          "pendingMs": 11.100000023841858,
+          "runningMs": 167.69999998807907,
+          "completeMs": 295,
+          "twoFrameCompleteMs": 310.10000002384186,
+          "status": "Evaluation complete · Evaluation milliseconds: 101.4 · Conservative candidates: 1757",
           "evaluations": 1,
-          "checksum": "213146f6cad83295c08e979d3c5bc060b824ab8039f5184f7db16dfa24a170d2"
+          "checksum": "e420aad30774db19054a02e8bb0d2139b3de4c9ae409257e7893b86cb420d660"
         },
         {
           "radius": 3,
-          "pendingMs": 11.199999988079071,
-          "runningMs": 168,
-          "completeMs": 262.0999999642372,
-          "twoFrameCompleteMs": 275.39999997615814,
-          "status": "Evaluation complete · Evaluation milliseconds: 62.7 · Conservative candidates: 1757",
+          "pendingMs": 11,
+          "runningMs": 161.20000004768372,
+          "completeMs": 274.2000000476837,
+          "twoFrameCompleteMs": 289.9000000357628,
+          "status": "Evaluation complete · Evaluation milliseconds: 92.0 · Conservative candidates: 1757",
           "evaluations": 1,
-          "checksum": "2e34ff8146e1970118c8fe50bf35f2a23995f92a1f5908e1689b65ef73a69e57"
+          "checksum": "e6aa86927cccb00ad845a94c671b69c40b891c49859c828615786f58eab1d043"
         },
         {
           "radius": 2,
-          "pendingMs": 14.099999964237213,
-          "runningMs": 167.5999999642372,
-          "completeMs": 271.89999997615814,
-          "twoFrameCompleteMs": 285,
-          "status": "Evaluation complete · Evaluation milliseconds: 74.7 · Conservative candidates: 1757",
+          "pendingMs": 11.099999964237213,
+          "runningMs": 161.19999998807907,
+          "completeMs": 276.19999998807907,
+          "twoFrameCompleteMs": 298.30000001192093,
+          "status": "Evaluation complete · Evaluation milliseconds: 93.1 · Conservative candidates: 1757",
           "evaluations": 1,
-          "checksum": "213146f6cad83295c08e979d3c5bc060b824ab8039f5184f7db16dfa24a170d2"
+          "checksum": "e420aad30774db19054a02e8bb0d2139b3de4c9ae409257e7893b86cb420d660"
         }
       ],
       "summary": {
         "pendingMs": {
-          "median": 12.100000023841858,
-          "p95": 14.699999988079071
+          "median": 11.400000035762787,
+          "p95": 14.300000011920929
         },
         "runningMs": {
-          "median": 169.80000001192093,
-          "p95": 175.5999999642372
+          "median": 161.39999997615814,
+          "p95": 167.69999998807907
         },
         "completeMs": {
-          "median": 270.80000001192093,
-          "p95": 282.4000000357628
+          "median": 284.80000001192093,
+          "p95": 346.30000001192093
         },
         "twoFrameCompleteMs": {
-          "median": 283.19999998807907,
-          "p95": 295.10000002384186
+          "median": 298.30000001192093,
+          "p95": 364.19999998807907
         }
       }
     },
@@ -362,111 +366,111 @@
       "samples": [
         {
           "radius": 2,
-          "pendingMs": 41.30000001192093,
-          "runningMs": 196.10000002384186,
-          "completeMs": 637.3999999761581,
-          "twoFrameCompleteMs": 676.3999999761581,
-          "status": "Evaluation complete · Evaluation milliseconds: 365.7 · Conservative candidates: 20525",
+          "pendingMs": 39.89999997615814,
+          "runningMs": 192.10000002384186,
+          "completeMs": 996.5,
+          "twoFrameCompleteMs": 1045.8999999761581,
+          "status": "Evaluation complete · Evaluation milliseconds: 708.2 · Conservative candidates: 20525",
           "evaluations": 1,
-          "checksum": "0df39e2c9ca11ef4af4d5f9b3e88703db01f6a88d6a2c4375dfbce3c838847c8"
-        },
-        {
-          "radius": 3,
-          "pendingMs": 39.80000001192093,
-          "runningMs": 193.5,
-          "completeMs": 605.1999999880791,
-          "twoFrameCompleteMs": 643.5,
-          "status": "Evaluation complete · Evaluation milliseconds: 344.1 · Conservative candidates: 20525",
-          "evaluations": 1,
-          "checksum": "9bece9746f20165b0d838a25dd29fb05f10931f868c9ba5862e6ead64a5514e3"
-        },
-        {
-          "radius": 2,
-          "pendingMs": 39.60000002384186,
-          "runningMs": 189.30000001192093,
-          "completeMs": 591.8000000119209,
-          "twoFrameCompleteMs": 629.1999999880791,
-          "status": "Evaluation complete · Evaluation milliseconds: 336.3 · Conservative candidates: 20525",
-          "evaluations": 1,
-          "checksum": "0df39e2c9ca11ef4af4d5f9b3e88703db01f6a88d6a2c4375dfbce3c838847c8"
-        },
-        {
-          "radius": 3,
-          "pendingMs": 38.80000001192093,
-          "runningMs": 191.69999998807907,
-          "completeMs": 624.1999999880791,
-          "twoFrameCompleteMs": 661.5,
-          "status": "Evaluation complete · Evaluation milliseconds: 358.6 · Conservative candidates: 20525",
-          "evaluations": 1,
-          "checksum": "9bece9746f20165b0d838a25dd29fb05f10931f868c9ba5862e6ead64a5514e3"
-        },
-        {
-          "radius": 2,
-          "pendingMs": 39.40000003576279,
-          "runningMs": 195.5,
-          "completeMs": 601.5,
-          "twoFrameCompleteMs": 639.6000000238419,
-          "status": "Evaluation complete · Evaluation milliseconds: 337.6 · Conservative candidates: 20525",
-          "evaluations": 1,
-          "checksum": "0df39e2c9ca11ef4af4d5f9b3e88703db01f6a88d6a2c4375dfbce3c838847c8"
+          "checksum": "3bf8a79cbadbbd3fbc44652e4c22bd662af5afb2060d8aad13d18b5e7b0ef4a9"
         },
         {
           "radius": 3,
           "pendingMs": 39.89999997615814,
-          "runningMs": 189,
-          "completeMs": 591.1000000238419,
-          "twoFrameCompleteMs": 629.1999999880791,
-          "status": "Evaluation complete · Evaluation milliseconds: 334.8 · Conservative candidates: 20525",
+          "runningMs": 191.5,
+          "completeMs": 915.5999999642372,
+          "twoFrameCompleteMs": 954.5999999642372,
+          "status": "Evaluation complete · Evaluation milliseconds: 650.4 · Conservative candidates: 20525",
           "evaluations": 1,
-          "checksum": "9bece9746f20165b0d838a25dd29fb05f10931f868c9ba5862e6ead64a5514e3"
+          "checksum": "aa75a98abb3a6dd26dfc58ab5d76f5f02be62dd2ae437108ff7167f9bab283ac"
         },
         {
           "radius": 2,
-          "pendingMs": 38.89999997615814,
-          "runningMs": 192.5999999642372,
-          "completeMs": 632.8999999761581,
-          "twoFrameCompleteMs": 671,
-          "status": "Evaluation complete · Evaluation milliseconds: 364.9 · Conservative candidates: 20525",
+          "pendingMs": 41.5,
+          "runningMs": 189.80000001192093,
+          "completeMs": 931.8999999761581,
+          "twoFrameCompleteMs": 972.3999999761581,
+          "status": "Evaluation complete · Evaluation milliseconds: 670.5 · Conservative candidates: 20525",
           "evaluations": 1,
-          "checksum": "0df39e2c9ca11ef4af4d5f9b3e88703db01f6a88d6a2c4375dfbce3c838847c8"
+          "checksum": "3bf8a79cbadbbd3fbc44652e4c22bd662af5afb2060d8aad13d18b5e7b0ef4a9"
         },
         {
           "radius": 3,
-          "pendingMs": 39.40000003576279,
-          "runningMs": 193.4000000357628,
-          "completeMs": 602.1999999880791,
-          "twoFrameCompleteMs": 639.6000000238419,
-          "status": "Evaluation complete · Evaluation milliseconds: 339.0 · Conservative candidates: 20525",
+          "pendingMs": 40.40000003576279,
+          "runningMs": 189.30000001192093,
+          "completeMs": 943.5,
+          "twoFrameCompleteMs": 985.1000000238419,
+          "status": "Evaluation complete · Evaluation milliseconds: 681.9 · Conservative candidates: 20525",
           "evaluations": 1,
-          "checksum": "9bece9746f20165b0d838a25dd29fb05f10931f868c9ba5862e6ead64a5514e3"
+          "checksum": "aa75a98abb3a6dd26dfc58ab5d76f5f02be62dd2ae437108ff7167f9bab283ac"
         },
         {
           "radius": 2,
-          "pendingMs": 40.19999998807907,
-          "runningMs": 188.10000002384186,
-          "completeMs": 594.8999999761581,
-          "twoFrameCompleteMs": 635.8000000119209,
-          "status": "Evaluation complete · Evaluation milliseconds: 337.3 · Conservative candidates: 20525",
+          "pendingMs": 39.19999998807907,
+          "runningMs": 190.19999998807907,
+          "completeMs": 948.3999999761581,
+          "twoFrameCompleteMs": 989.5999999642372,
+          "status": "Evaluation complete · Evaluation milliseconds: 683.3 · Conservative candidates: 20525",
           "evaluations": 1,
-          "checksum": "0df39e2c9ca11ef4af4d5f9b3e88703db01f6a88d6a2c4375dfbce3c838847c8"
+          "checksum": "3bf8a79cbadbbd3fbc44652e4c22bd662af5afb2060d8aad13d18b5e7b0ef4a9"
+        },
+        {
+          "radius": 3,
+          "pendingMs": 44.90000003576279,
+          "runningMs": 209.80000001192093,
+          "completeMs": 898.9000000357628,
+          "twoFrameCompleteMs": 938.1000000238419,
+          "status": "Evaluation complete · Evaluation milliseconds: 615.9 · Conservative candidates: 20525",
+          "evaluations": 1,
+          "checksum": "aa75a98abb3a6dd26dfc58ab5d76f5f02be62dd2ae437108ff7167f9bab283ac"
+        },
+        {
+          "radius": 2,
+          "pendingMs": 55.69999998807907,
+          "runningMs": 192.69999998807907,
+          "completeMs": 927.5,
+          "twoFrameCompleteMs": 968.2999999523163,
+          "status": "Evaluation complete · Evaluation milliseconds: 665.6 · Conservative candidates: 20525",
+          "evaluations": 1,
+          "checksum": "3bf8a79cbadbbd3fbc44652e4c22bd662af5afb2060d8aad13d18b5e7b0ef4a9"
+        },
+        {
+          "radius": 3,
+          "pendingMs": 37.59999996423721,
+          "runningMs": 190.0999999642372,
+          "completeMs": 900.3999999761581,
+          "twoFrameCompleteMs": 938.5999999642372,
+          "status": "Evaluation complete · Evaluation milliseconds: 638.6 · Conservative candidates: 20525",
+          "evaluations": 1,
+          "checksum": "aa75a98abb3a6dd26dfc58ab5d76f5f02be62dd2ae437108ff7167f9bab283ac"
+        },
+        {
+          "radius": 2,
+          "pendingMs": 36.69999998807907,
+          "runningMs": 190.69999998807907,
+          "completeMs": 885.1999999880791,
+          "twoFrameCompleteMs": 921.6000000238419,
+          "status": "Evaluation complete · Evaluation milliseconds: 623.1 · Conservative candidates: 20525",
+          "evaluations": 1,
+          "checksum": "3bf8a79cbadbbd3fbc44652e4c22bd662af5afb2060d8aad13d18b5e7b0ef4a9"
         }
       ],
       "summary": {
         "pendingMs": {
-          "median": 39.60000002384186,
-          "p95": 41.30000001192093
+          "median": 39.89999997615814,
+          "p95": 55.69999998807907
         },
         "runningMs": {
-          "median": 192.5999999642372,
-          "p95": 196.10000002384186
+          "median": 190.69999998807907,
+          "p95": 209.80000001192093
         },
         "completeMs": {
-          "median": 602.1999999880791,
-          "p95": 637.3999999761581
+          "median": 927.5,
+          "p95": 996.5
         },
         "twoFrameCompleteMs": {
-          "median": 639.6000000238419,
-          "p95": 676.3999999761581
+          "median": 968.2999999523163,
+          "p95": 1045.8999999761581
         }
       }
     }

@@ -20,8 +20,8 @@ code is not shipped in `browser-dist/`. The driver serves it on local port 4174,
 launches pinned headless Chromium and closes browser/server on completion. The
 same Node driver still supports the original `npm run benchmark:app` workload.
 
-Measured **2026-11-27T20:44:32.080Z**. Source SHA-256:
-`2f5e40e063adbfe770397a476d6e876e000cfb2593d7e1932a1a6eae179f84ac`. The manifest hashes ordered filenames, a NUL separator
+Measured **2026-11-28T12:23:32.306Z**. Source SHA-256:
+`3c94de23fcb3100b81846f8256c67eea5b5717118adafe79e0589846f237432c`. The manifest hashes ordered filenames, a NUL separator
 and file contents: production source/CSS, benchmark entries/driver/config and lockfile.
 Documentation, screenshots and tests are excluded from this identity.
 
@@ -73,15 +73,15 @@ latency gate is imposed in tests.
 
 | Cells | Evaluation median / p95 ms | Presentation DOM/layout median / p95 ms | Two-frame wait median / p95 ms |
 | ----: | -------------------------: | --------------------------------------: | -----------------------------: |
-|   117 |                83.0 / 96.8 |                             25.5 / 32.4 |                    10.5 / 33.5 |
-|   468 |              716.4 / 743.7 |                             74.7 / 86.3 |                    26.5 / 31.6 |
+|   117 |                83.5 / 95.9 |                             25.5 / 38.5 |                    19.4 / 27.6 |
+|   468 |              749.8 / 770.3 |                             76.9 / 79.3 |                    24.3 / 34.4 |
 
 ## Responsiveness decision and limits
 
 The 117-cell configuration is practical for the prototype; the populated 468-cell
 configuration has a substantial synchronous pause. Automatic updates still use the
 accepted 150 ms debounce/revision guards and remove stale verdicts immediately.
-The measured evaluation alone occupies roughly 0.72 seconds on this
+The measured evaluation alone occupies roughly 0.75 seconds on this
 machine; presentation adds further work. Debounce consolidates rapid edits but
 cannot keep the main thread interactive during the pass.
 
@@ -90,14 +90,17 @@ All existing resource budgets remain: 512 cells/targets, 64 per generated dimens
 limits. The cap is admission, not a latency promise. No worker, result cache,
 prevalidated-board shortcut or geometry traversal change is introduced.
 
-The smallest next UI improvement to measure is cooperative yielding between target
-batches, retaining exact preflight and invalidating superseded work through the
-existing revision mechanism. This preserves the accepted per-query API and improves
-opportunity to handle input; it does not reduce total work. Repeated full-board
-validation is included here, but this timing alone does not isolate its cost.
-Profile it before proposing a separately reviewed validated immutable-snapshot
-contract. Frontend bypassing of validation is not recommended.
+M3C now implements cooperative yielding between bounded target chunks, preserving
+the accepted per-query API and revision cancellation. See the
+[before/after comparison and validation profile](m3c-performance.md). It improves
+input opportunities without reducing total work. The synchronous reference here
+still includes repeated board validation. No frontend bypass or separately
+validated-snapshot API is introduced.
 
 The [generic baseline and automatic-update workload](m3a-performance.md) were also
 rerun after shared UI changes. Their mathematical complete-work checksums remain
 unchanged. Geometry, board and ruleset production code is untouched.
+
+Refreshed for M3C source identity. These evaluation tables retain the synchronous
+reference; the browser now uses cooperative evaluation. See the
+[M3C before/after comparison and validation profile](m3c-performance.md).

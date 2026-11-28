@@ -1,4 +1,4 @@
-export const memoirEn: Readonly<Record<string, string>> = Object.freeze({
+export const memoirEn = Object.freeze({
   'memoir44.refresh2025': "Memoir '44 2025 · supported subset",
   'memoir.profile-note':
     "Memoir '44 refreshed 2025 supported subset · separate working board · inspection only, not attack legality. No official endorsement.",

@@ -207,6 +207,57 @@ export function bindBoard(
     cancel();
   });
   svg.addEventListener('keydown', (event) => {
+    const navigable = [
+      ...svg.querySelectorAll<SVGGraphicsElement>('[data-cell],[data-edge]'),
+    ];
+    const current =
+      event.target instanceof Element
+        ? event.target.closest('[data-cell],[data-edge]')
+        : null;
+    let next: SVGGraphicsElement | undefined;
+    if (
+      event.ctrlKey &&
+      ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)
+    ) {
+      const q = BigInt(current?.getAttribute('data-q') ?? '0'),
+        r = BigInt(current?.getAttribute('data-r') ?? '0');
+      const key = `${q + (event.key === 'ArrowRight' ? 1n : event.key === 'ArrowLeft' ? -1n : 0n)},${r + (event.key === 'ArrowDown' ? 1n : event.key === 'ArrowUp' ? -1n : 0n)}`;
+      next = navigable.find((node) => node.getAttribute('data-cell') === key);
+      event.preventDefault();
+    } else if (['Home', 'End', 'PageDown', 'PageUp'].includes(event.key)) {
+      const index = navigable.findIndex((node) => node === current);
+      const chosen =
+        event.key === 'Home'
+          ? 0
+          : event.key === 'End'
+            ? navigable.length - 1
+            : Math.max(
+                0,
+                Math.min(
+                  navigable.length - 1,
+                  index + (event.key === 'PageDown' ? 1 : -1),
+                ),
+              );
+      next = navigable[chosen];
+      event.preventDefault();
+    }
+    if (next) {
+      next.focus({ preventScroll: true });
+      const bounds = next.getBBox(),
+        x = bounds.x + bounds.width / 2,
+        y = bounds.y + bounds.height / 2;
+      if (
+        x < view.x ||
+        x > view.x + view.width ||
+        y < view.y ||
+        y > view.y + view.height
+      ) {
+        view = { ...view, x: x - view.width / 2, y: y - view.height / 2 };
+        apply();
+      }
+      return;
+    }
+    if (event.ctrlKey) return;
     if (event.key === 'Enter') {
       event.preventDefault();
       resolve(identity(event.target));

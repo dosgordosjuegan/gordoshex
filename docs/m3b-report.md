@@ -1,5 +1,8 @@
 # M3B completion report
 
+Historical milestone record. See the [M3C release guide](release-polish.md) for
+current localization, accessibility, mobile and evaluation behavior.
+
 The Memoir '44 graphical editor is implemented on `feature/memoir44-editor` for
 review. PR #6 was already merged at reviewed head
 `55c4aac83c7ffeca7665d1e9448ffd30e4282de2`, with both CI runs successful. Main was
