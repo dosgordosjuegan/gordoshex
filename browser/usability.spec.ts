@@ -301,7 +301,7 @@ test('rapid mathematical edits show pending immediately and publish only the lat
   await expect(page.locator('#target-inspection')).toContainText(
     'Range: Out of range',
   );
-  await expect(page.locator('#target-inspection')).toContainText('radius: 1');
+  await expect(page.locator('#target-inspection')).toContainText('Radius: 1');
   // Cancel a queued valid update with invalid input; it must never publish.
   await page.locator('#radius').evaluate((node) => {
     if (!(node instanceof HTMLInputElement)) throw new Error('Input');

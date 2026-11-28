@@ -91,7 +91,7 @@ export function renderBoard(
       'data-q': String(coordinate.q),
       'data-r': String(coordinate.r),
       role: 'button',
-      tabindex: '0',
+      tabindex: '-1',
       class: `cell ${present ? status : 'absent'}${blockers.has(key) ? ' blocker' : ''}${key === selectionKey(state.target) ? ' target' : ''}${key === selectionKey(state.inspected) ? ' inspected' : ''}`,
       'aria-label': `${key} · ${present ? t(status === 'requirements-met' ? 'memoir.status.requirements-met' : `status.${status}`) : t('inspection.absent')} · ${elements.length} ${t('inspection.contents')}`,
     });
@@ -208,7 +208,7 @@ export function renderBoard(
         'data-nq': String(edge.second.q),
         'data-nr': String(edge.second.r),
         'aria-label': `${t('edge.title')}: ${edge.key}`,
-        tabindex: state.mode === 'edge' ? '0' : '-1',
+        tabindex: '-1',
         role: 'button',
       });
       root.append(line);

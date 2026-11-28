@@ -18,7 +18,7 @@ ES2022 target, production modules and CSS as the application, then starts a loca
 preview on port 4174 and runs headless Chromium. Benchmark-only code is not shipped
 in `browser-dist/`. The runner closes its browser and server on completion.
 
-Measured **2026-11-27T20:44:05.039Z**, Linux 7.0.0-44-generic x64 on Ubuntu 26.04.1,
+Measured **2026-11-28T12:23:04.523Z**, Linux 7.0.0-44-generic x64 on Ubuntu 26.04.1,
 Intel Core i7-2600 @ 3.40 GHz, 8 logical CPUs, 16,130,686,976 bytes physical RAM.
 Node **22.13.1**, npm **10.9.2**, Vite **8.4.0**, Playwright **1.65.1**, Chromium
 **159.0.8154.6**. Viewport 1440 × 1000, device pixel ratio 1; SVG 1100 × 750.
@@ -26,7 +26,7 @@ No CPU throttling or forced garbage collection. Headless results do not establis
 physical mobile-device performance.
 
 Source snapshot SHA-256:
-`2f5e40e063adbfe770397a476d6e876e000cfb2593d7e1932a1a6eae179f84ac`.
+`3c94de23fcb3100b81846f8256c67eea5b5717118adafe79e0589846f237432c`.
 The ordered source filenames, NUL separator and contents are hashed; the raw file
 lists all inputs, including production modules, CSS, benchmark code/configuration
 and lockfile. Documentation, screenshots and tests are outside that identity.
@@ -67,8 +67,8 @@ assertions are imposed in tests.
 
 | Board   | Queries | Conservative candidates total | Evaluation median / p95 ms | SVG DOM/layout median / p95 ms | Two-frame wait median / p95 ms |
 | ------- | ------: | ----------------------------: | -------------------------: | -----------------------------: | -----------------------------: |
-| 13 × 9  |     117 |                         1,757 |                48.2 / 57.1 |                    17.8 / 19.7 |                    16.5 / 23.4 |
-| 26 × 18 |     468 |                        20,525 |              331.9 / 348.5 |                    56.6 / 63.0 |                    17.8 / 25.7 |
+| 13 × 9  |     117 |                         1,757 |                49.2 / 57.7 |                    19.1 / 23.4 |                    13.9 / 20.5 |
+| 26 × 18 |     468 |                        20,525 |              363.0 / 385.8 |                    57.5 / 63.0 |                    22.5 / 27.8 |
 
 ## Limits and recommendation
 
@@ -87,8 +87,8 @@ revision-guarded. Hover, orientation, zoom, pan, target selection and inspection
 state do not trigger evaluation. Manual **Evaluate all targets** remains available.
 The debounce consolidates rapid edits; it does not reduce synchronous computation
 cost or eliminate the interaction pause during a pass. No worker, result cache or
-optimized traversal is added. Cooperative yielding between targets remains the
-smallest next change to measure if the observed pause is unacceptable.
+optimized traversal is added. M3C adds cooperative yielding between bounded target chunks; the table above
+retains the synchronous comparison path. See the [M3C comparison](m3c-performance.md).
 
 The separate [geometry baseline](performance.md) was rerun for the original M3A
 tooling/config changes. This usability correction changes no mathematical production
@@ -139,16 +139,20 @@ checks complete mathematical results. No stale result is accepted as completion.
 
 | Cells | Pending DOM median / p95 ms | Running DOM median / p95 ms | Complete DOM median / p95 ms | Two-frame completion median / p95 ms |
 | ----: | --------------------------: | --------------------------: | ---------------------------: | -----------------------------------: |
-|   117 |                 12.1 / 14.7 |               169.8 / 175.6 |                270.8 / 282.4 |                        283.2 / 295.1 |
-|   468 |                 39.6 / 41.3 |               192.6 / 196.1 |                602.2 / 637.4 |                        639.6 / 676.4 |
+|   117 |                 11.4 / 14.3 |               161.4 / 167.7 |                284.8 / 346.3 |                        298.3 / 364.2 |
+|   468 |                 39.9 / 55.7 |               190.7 / 209.8 |                927.5 / 996.5 |                       968.3 / 1045.9 |
 
-Measured **2026-11-27T20:44:48.062Z**. Source SHA-256:
-`1ba651425dcfe2c9a53efebc6397f56d042051a092c97a009697736f8d3bd7f4`. The manifest hashes production
+Measured **2026-11-28T12:20:46.097Z**. Source SHA-256:
+`580f72de92330dff6cf5574167cf19fe6233c0050a3aea456c6061dc48abdc23`. The manifest hashes production
 modules/CSS, the driver, app HTML/Vite configuration and lockfile.
 
-A representative generic 117-cell edit completes in 270.8 ms median;
-468 cells take 602.2 ms (639.6 ms including the two-frame observation).
-Pending feedback arrives synchronously in 12.1 / 39.6 ms median on this machine.
+A representative generic 117-cell edit completes in 284.8 ms median;
+468 cells take 927.5 ms (968.3 ms including the two-frame observation).
+Pending feedback arrives synchronously in 11.4 / 39.9 ms median on this machine.
 The larger automatic update remains noticeable. Debouncing prevents repeated passes
 while edits arrive rapidly and revision guards protect publication; neither is a
 responsiveness guarantee. Workers, caching and geometry optimization remain deferred.
+
+Refreshed for M3C source identity. These evaluation tables retain the synchronous
+reference; the browser now uses cooperative evaluation. See the
+[M3C before/after comparison and validation profile](m3c-performance.md).

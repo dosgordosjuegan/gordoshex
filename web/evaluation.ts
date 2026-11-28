@@ -19,10 +19,10 @@ export type Batch =
       readonly milliseconds: number;
     }
   | { readonly status: 'unavailable'; readonly reason: string };
-export function evaluateBoard(
+function* evaluationSteps(
   state: AppState,
   maxCandidates = DEFAULT_MAX_CANDIDATES,
-): Batch {
+): Generator<void, Batch> {
   if (!state.origin || !state.board.hasCell(state.origin))
     return { status: 'unavailable', reason: 'batch.observer' };
   if (BigInt(state.board.cells.length) > MAX_CELLS)
@@ -35,7 +35,7 @@ export function evaluateBoard(
   }
   const results = new Map<string, VisibilityResult>(),
     start = performance.now();
-  for (const cell of state.board.cells)
+  for (const cell of state.board.cells) {
     results.set(
       coordinateKey(cell.coordinate),
       evaluateVisibility(
@@ -50,12 +50,69 @@ export function evaluateBoard(
         BUILTIN_RULESETS,
       ),
     );
+    yield;
+  }
   return {
     status: 'complete',
     results,
     candidates,
     milliseconds: performance.now() - start,
   };
+}
+/** The synchronous reference path and cooperative UI share admission and per-target work. */
+export function evaluateBoard(
+  state: AppState,
+  maxCandidates = DEFAULT_MAX_CANDIDATES,
+): Batch {
+  const steps = evaluationSteps(state, maxCandidates);
+  let step = steps.next();
+  while (!step.done) step = steps.next();
+  return step.value;
+}
+export const EVALUATION_CHUNK_MS = 8;
+export const EVALUATION_CHUNK_TARGETS = 8;
+export interface EvaluationControl {
+  readonly cancelled: () => boolean;
+  readonly progress: (completed: number, total: number) => void;
+  readonly yieldControl?: () => Promise<void>;
+}
+/** Partial maps stay private. Superseded work returns null, never a partial verdict. */
+export async function evaluateBoardCooperatively(
+  state: AppState,
+  control: EvaluationControl,
+  maxCandidates = DEFAULT_MAX_CANDIDATES,
+): Promise<Batch | null> {
+  const snapshot = Object.freeze({
+    ...state,
+    range: Object.freeze({ ...state.range }),
+  });
+  const steps = evaluationSteps(snapshot, maxCandidates);
+  const yieldControl =
+    control.yieldControl ??
+    (() => new Promise<void>((resolve) => setTimeout(resolve, 0)));
+  let completed = 0;
+  try {
+    while (!control.cancelled()) {
+      const start = performance.now();
+      let count = 0;
+      do {
+        if (control.cancelled()) return null;
+        const step = steps.next();
+        if (step.done) return control.cancelled() ? null : step.value;
+        completed++;
+        count++;
+      } while (
+        count < EVALUATION_CHUNK_TARGETS &&
+        performance.now() - start < EVALUATION_CHUNK_MS
+      );
+      if (control.cancelled()) return null;
+      control.progress(completed, snapshot.board.cells.length);
+      await yieldControl();
+    }
+    return null;
+  } finally {
+    steps.return({ status: 'unavailable', reason: 'evaluation.cancelled' });
+  }
 }
 export type CellStyle =
   | 'pending'

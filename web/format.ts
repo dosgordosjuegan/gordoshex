@@ -1,11 +1,10 @@
 import type { SemanticMessage } from '../src/application.js';
-import { memoirEn } from './messages/memoir-en.js';
-import { en } from './messages/en.js';
-export const t = (key: string): string => memoirEn[key] ?? en[key] ?? key;
+import { t, hasTranslation } from './i18n.js';
+export { t } from './i18n.js';
 export function semantic(value: SemanticMessage): string {
   if (value.code.startsWith('memoir44.')) {
-    const template = memoirEn[value.code];
-    if (!template) return t('memoir.message-unavailable');
+    const template = t(value.code);
+    if (!hasTranslation(value.code)) return t('memoir.message-unavailable');
     return template.replace(/\{(\w+)\}/g, (_, key: string) => {
       const arg = value.arguments[key];
       if (key === 'unitType' && typeof arg === 'string')
@@ -18,7 +17,8 @@ export function semantic(value: SemanticMessage): string {
 
   const args = Object.entries(value.arguments)
     .map(
-      ([key, v]) => `${key}: ${typeof v === 'string' ? v : JSON.stringify(v)}`,
+      ([key, v]) =>
+        `${t(`argument.${key}`)}: ${typeof v === 'boolean' ? t(v ? 'memoir.yes' : 'memoir.no') : typeof v === 'string' && hasTranslation(v) ? t(v) : typeof v === 'string' ? v : JSON.stringify(v)}`,
     )
     .join('; ');
   return `${t(value.code)}${args ? ` (${args})` : ''}`;

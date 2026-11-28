@@ -16,7 +16,7 @@ import {
   type AppState,
   type Mode,
 } from './state.js';
-import { evaluateBoard, type Batch } from './evaluation.js';
+import { evaluateBoardCooperatively, type Batch } from './evaluation.js';
 import { renderBoard, renderInspection } from './render.js';
 import { bindBoard } from './interaction.js';
 import {
@@ -38,10 +38,30 @@ import {
   syncProfileControls,
   syncRangeControls,
 } from './memoir-controls.js';
+import {
+  initializeLanguage,
+  currentLanguage,
+  persistLanguage,
+  refreshTranslations,
+} from './i18n.js';
+import { preserveFocus } from './focus.js';
 import { Recalculation, mathematicalInputsChanged } from './recalculation.js';
+let storage: Storage | undefined;
+try {
+  storage = localStorage;
+} catch {
+  /* Browser storage is optional. */
+}
+initializeLanguage(navigator.languages, storage);
 const root = document.getElementById('app');
 if (!root) throw new Error('Missing app');
 shell(root);
+refreshTranslations();
+select('language').value = currentLanguage();
+if (matchMedia('(max-width: 900px)').matches) {
+  const settings = element('board-settings');
+  if (settings instanceof HTMLDetailsElement) settings.open = false;
+}
 function boardSvg(): SVGSVGElement {
   const node = document.getElementById('board');
   if (!(node instanceof SVGSVGElement)) throw new Error('Missing SVG');
@@ -52,7 +72,10 @@ let state = initialState(),
   batch: Batch | null = null,
   selectedEdge: EdgeId | null = null,
   busy = false,
-  evaluations = 0;
+  evaluations = 0,
+  progress: { completed: number; total: number } | null = null,
+  feedbackKey: string | null = null,
+  hoverKey = '';
 const workingBoards = new WorkingBoards(state);
 const interaction = bindBoard(
   svg,
@@ -65,17 +88,21 @@ const interaction = bindBoard(
       }
     }),
   (key) => {
+    hoverKey = key;
     element('hover').textContent = key ? `${t('hover.label')}: ${key}` : '';
   },
 );
 function attempt(action: () => void): void {
   try {
+    feedbackKey = null;
     element('feedback').hidden = true;
     action();
   } catch (error) {
     const node = element('feedback');
     node.hidden = false;
-    node.textContent = `${t('feedback.error')}: ${t(error instanceof Error ? error.message : 'evaluation.internal-error')}`;
+    feedbackKey =
+      error instanceof Error ? error.message : 'evaluation.internal-error';
+    node.textContent = `${t('feedback.error')}: ${t(feedbackKey)}`;
   }
 }
 function change(next: AppState, fit = false): void {
@@ -98,17 +125,12 @@ function change(next: AppState, fit = false): void {
 }
 function render(fit = false): void {
   syncProfileControls(state);
-  const focused = document.activeElement,
-    focusedCell =
-      focused instanceof Element
-        ? focused.closest('[data-cell]')?.getAttribute('data-cell')
-        : null;
+  const restoreFocus = preserveFocus();
   const drawing = renderBoard(svg, state, batch, selectedEdge);
   if (fit) interaction.fit(drawing.frame);
-  if (focusedCell)
-    Array.from(svg.querySelectorAll<SVGGElement>('[data-cell]'))
-      .find((n) => n.getAttribute('data-cell') === focusedCell)
-      ?.focus();
+  element('hover').textContent = hoverKey
+    ? `${t('hover.label')}: ${hoverKey}`
+    : '';
   element('board-count').textContent =
     `${state.board.cells.length} ${t('board.count')}`;
   element('selections').textContent =
@@ -122,12 +144,22 @@ function render(fit = false): void {
         ? 'unavailable'
         : 'pending';
   element('batch-status').textContent = busy
-    ? t('query.busy')
+    ? `${t('query.busy')}${progress ? ` ${t('query.progress')}: ${progress.completed} / ${progress.total}` : ''}`
     : batch?.status === 'complete'
       ? `${t('query.complete')} · ${t('timing.label')}: ${batch.milliseconds.toFixed(1)} · ${t('details.candidates')}: ${batch.candidates}`
       : batch?.status === 'unavailable'
         ? t(batch.reason)
         : t('query.pending');
+  const progressNode = element('evaluation-progress');
+  if (progressNode instanceof HTMLProgressElement) {
+    progressNode.hidden = !busy;
+    progressNode.max = progress?.total || 1;
+    progressNode.value = progress?.completed ?? 0;
+  }
+  if (feedbackKey)
+    element('feedback').textContent =
+      `${t('feedback.error')}: ${t(feedbackKey)}`;
+  element('target-inspection').setAttribute('aria-busy', String(busy));
   const problem =
     memoirMode(state) && batch?.status === 'complete'
       ? [...batch.results.values()].find(
@@ -154,18 +186,40 @@ function render(fit = false): void {
     renderContents(state, mutate);
     renderEdge(state, selectedEdge, mutate);
   }
+  restoreFocus();
 }
-const recalculation = new Recalculation(
-  evaluateBoard,
+const recalculation: Recalculation = new Recalculation(
+  (snapshot) => {
+    const revision = recalculation.revision;
+    return evaluateBoardCooperatively(snapshot, {
+      cancelled: () => !recalculation.isCurrent(revision),
+      progress: (completed, total) => {
+        if (!recalculation.isCurrent(revision)) return;
+        progress = { completed, total };
+        element('batch-status').textContent =
+          `${t('query.busy')} ${t('query.progress')}: ${completed} / ${total}`;
+        const node = element('evaluation-progress');
+        if (node instanceof HTMLProgressElement) {
+          node.max = total || 1;
+          node.value = completed;
+        }
+      },
+    });
+  },
   () => {
     busy = true;
     evaluations++;
+    progress = { completed: 0, total: state.board.cells.length };
     render();
+    element('announcements').textContent = t('query.busy');
   },
   (result) => {
     batch = result;
     busy = false;
+    progress = null;
     render();
+    element('announcements').textContent =
+      result.status === 'complete' ? t('query.complete') : t(result.reason);
   },
   (error) => {
     batch = { status: 'unavailable', reason: 'evaluation.internal-error' };
@@ -179,6 +233,7 @@ const recalculation = new Recalculation(
 function requestEvaluation(delay?: number, fit = false): void {
   batch = null;
   busy = false;
+  progress = null;
   if (input('radius').checkValidity()) recalculation.request(state, delay);
   else recalculation.cancel();
   render(fit);
@@ -281,6 +336,16 @@ element('edge-side').addEventListener('submit', (event) => {
     selectedEdge = localEdge(state.inspected, direction);
     render();
   });
+});
+select('language').addEventListener('change', () => {
+  const next = select('language').value;
+  if (next !== 'en' && next !== 'es') return;
+  persistLanguage(next, storage);
+  refreshTranslations();
+  if (!input('radius').checkValidity())
+    input('radius').setCustomValidity(t('input.range'));
+  render();
+  element('announcements').textContent = t('language.changed');
 });
 input('coordinates').addEventListener('change', () =>
   change({ ...state, showCoordinates: input('coordinates').checked }),

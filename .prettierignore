@@ -10,3 +10,4 @@ docs/specification.md
 docs/testing.md
 
 benchmarks/memoir-results.json
+benchmarks/release-results.json

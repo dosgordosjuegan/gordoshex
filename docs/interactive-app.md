@@ -2,10 +2,11 @@
 
 The browser application exposes the three accepted generic rulesets plus the
 [Memoir '44 2025 supported-subset editor](memoir-editor.md). It is an
-English, desktop-first calculator built with native TypeScript, SVG, HTML and CSS.
+English/Spanish calculator built with native TypeScript, SVG, HTML and CSS.
 No framework, backend, deployment configuration or runtime dependency is added.
-Memoir controls and presentation are documented separately; full Spanish coverage
-remains M3C. The existing geometry/application libraries retain their standalone
+Memoir controls and presentation are documented separately.
+[M3C release polish](release-polish.md) adds localization, keyboard navigation,
+responsive layout and cooperative evaluation. The existing geometry/application libraries retain their standalone
 ESM/declaration build and zero runtime dependencies.
 
 ## Launch and inspect
@@ -97,10 +98,12 @@ revision. Invalid range input cancels pending work; correcting it schedules a fr
 pass even when its value equals the last valid input. Missing observers and resource
 failures retain explicit unavailable/failed states, with no stale verdict.
 
-The busy state is painted before the unchanged synchronous evaluation. No result
-cache, worker or geometry optimization is added. JavaScript cannot process new
-input while a synchronous pass runs; queued input is handled afterward and clears
-results immediately. The revision guards prevent deferred or reentrant old work
+The busy state is painted before evaluation. The M3C browser path yields between
+bounded chunks while retaining the unchanged per-target API; the synchronous
+reference remains available for comparisons. No result
+cache, worker or geometry optimization is added. JavaScript processes input between chunks; an individual query and atomic
+rendering remain synchronous. New mathematical input cancels superseded work and
+clears results immediately. The revision guards prevent deferred or reentrant old work
 from publishing over newer state. `data-phase` and `data-evaluations` on the status
 node provide bounded diagnostics for browser verification and measurement.
 
@@ -172,9 +175,10 @@ The 100,000-candidate cap is an outer admission bound, not a latency target, and
 under 5 times the measured centered 468-cell pass. The dimension bound prevents
 very elongated generated sets, while manual disconnected cells still face exact
 batch and per-query budgets. The stack/edge limits bound the additional payload
-and inspection work. The short debounce consolidates rapid edits because the measured larger pass
-occupies hundreds of milliseconds; it does not eliminate that synchronous pause. See the reproducible measurements
-and limitations in [M3A performance](m3a-performance.md).
+and inspection work. The short debounce consolidates rapid edits; bounded cooperative chunks let input
+run between targets without reducing the mathematical work. Individual queries
+and atomic rendering can still pause interaction. See the reproducible
+[M3C responsiveness comparison](m3c-performance.md).
 
 ## Verification and known limits
 
@@ -195,8 +199,12 @@ recovery from invalid inputs. Screenshots are evidence artifacts, not golden tes
 [desktop](screenshots/m3a-desktop.png), [mobile viewport](screenshots/m3a-mobile.png).
 
 Changes are in-memory; reload discards edits. Undo, scenario import/export,
-shareable URLs, deployment, attack eligibility and final branding
-are excluded. Very large relative spans are refused, and large admitted synchronous
-passes still pause interaction. Full Spanish parity and broader browser/device
-accessibility verification remain M3C. No claims are made about legal attacks or
+shareable URLs, deployment and attack eligibility remain excluded. Very large
+relative spans are refused; individual exact queries and atomic rendering still
+pause interaction despite cooperative batching. Full release verification and remaining device/accessibility limits are
+documented in [M3C](release-polish.md). No claims are made about legal attacks or
 official game-board generation.
+
+Current behavior, browser coverage and limitations are maintained in the
+[M3C release guide](release-polish.md). The linked M3A synchronous-reference measurements describe
+the synchronous reference; the browser now publishes cooperative complete batches.

@@ -28,11 +28,19 @@ export class Recalculation {
   #timer: ReturnType<typeof setTimeout> | undefined;
   #frame: number | undefined;
   constructor(
-    private readonly evaluate: (snapshot: AppState) => Batch,
+    private readonly evaluate: (
+      snapshot: AppState,
+    ) => Batch | Promise<Batch | null>,
     private readonly running: () => void,
     private readonly complete: (batch: Batch) => void,
     private readonly failed: (error: unknown) => void,
   ) {}
+  get revision(): number {
+    return this.#revision;
+  }
+  isCurrent(revision: number): boolean {
+    return this.#revision === revision;
+  }
   cancel(): void {
     this.#revision++;
     if (this.#timer !== undefined) clearTimeout(this.#timer);
@@ -57,7 +65,17 @@ export class Recalculation {
           if (revision !== this.#revision) return;
           try {
             const batch = this.evaluate(snapshot);
-            if (revision === this.#revision) this.complete(batch);
+            if (batch instanceof Promise) {
+              void batch.then(
+                (result) => {
+                  if (result && revision === this.#revision)
+                    this.complete(result);
+                },
+                (error) => {
+                  if (revision === this.#revision) this.failed(error);
+                },
+              );
+            } else if (revision === this.#revision) this.complete(batch);
           } catch (error) {
             if (revision === this.#revision) this.failed(error);
           }

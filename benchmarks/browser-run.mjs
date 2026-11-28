@@ -19,7 +19,12 @@ const server = spawn(
   { stdio: 'pipe' },
 );
 const memoir = process.argv[2] === 'memoir';
-const route = memoir ? 'memoir.html' : 'browser.html';
+const release = process.argv[2] === 'release';
+const route = release
+  ? 'release.html'
+  : memoir
+    ? 'memoir.html'
+    : 'browser.html';
 let browser;
 try {
   for (let n = 0; n < 100; n++) {
@@ -44,7 +49,7 @@ try {
   await page.waitForFunction(
     () => globalThis.document.body.dataset.done === 'true',
     {},
-    { timeout: 120000 },
+    { timeout: 240000 },
   );
   const raw = await page.locator('#report').textContent();
   if (!raw) throw new Error('No results');
@@ -53,16 +58,9 @@ try {
   for (const dir of ['src', 'web'])
     for (const entry of await readdir(dir, { recursive: true }))
       if (entry.endsWith('.ts') || entry.endsWith('.css'))
-        files.push(`${dir}/${entry}`);
-  files.push(
-    'benchmarks/browser.ts',
-    'benchmarks/memoir.ts',
-    'benchmarks/memoir.html',
-    'benchmarks/browser-run.mjs',
-    'benchmarks/browser.html',
-    'vite.benchmark.config.ts',
-    'package-lock.json',
-  );
+        for (const file of await readdir('benchmarks'))
+          if (/\.(ts|mjs|html)$/.test(file)) files.push(`benchmarks/${file}`);
+  files.push('vite.benchmark.config.ts', 'package-lock.json');
   files.sort();
   const hash = createHash('sha256');
   for (const file of files) {
@@ -78,6 +76,48 @@ try {
     };
   };
   for (const dataset of result.data) {
+    if (release) {
+      const summarizeFields = (samples, keys) =>
+        Object.fromEntries(
+          keys.map((key) => [
+            key,
+            summarize(samples.map((sample) => sample[key])),
+          ]),
+        );
+      dataset.summary = Object.fromEntries(
+        ['synchronous', 'cooperative'].map((mode) => [
+          mode,
+          summarizeFields(
+            dataset.samples.filter((sample) => sample.mode === mode),
+            [
+              'evaluationMs',
+              'pendingMs',
+              'presentationMs',
+              'completeDomMs',
+              'evaluationMaxGapMs',
+              'maxHeartbeatGapMs',
+              'keyboardProbes',
+              'wheelProbes',
+            ],
+          ),
+        ]),
+      );
+      dataset.summary.quiescent = Object.fromEntries(
+        ['synchronous', 'cooperative'].map((mode) => [
+          mode,
+          summarizeFields(
+            dataset.quiescentSamples.filter((sample) => sample.mode === mode),
+            ['evaluationMs', 'pendingMs', 'presentationMs', 'completeDomMs'],
+          ),
+        ]),
+      );
+      dataset.summary.validation = summarizeFields(dataset.validationSamples, [
+        'validationMs',
+        'queryTotalMs',
+        'validationSharePercent',
+      ]);
+      continue;
+    }
     const presentation = memoir ? 'presentationMs' : 'renderMs';
     dataset.summary = {
       evaluationMs: summarize(dataset.samples.map((s) => s.evaluationMs)),
@@ -103,9 +143,11 @@ try {
     },
   };
   await writeFile(
-    memoir
-      ? 'benchmarks/memoir-results.json'
-      : 'benchmarks/browser-results.json',
+    release
+      ? 'benchmarks/release-results.json'
+      : memoir
+        ? 'benchmarks/memoir-results.json'
+        : 'benchmarks/browser-results.json',
     JSON.stringify(output, null, 2) + '\n',
   );
   console.log(

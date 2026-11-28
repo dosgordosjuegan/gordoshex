@@ -1,8 +1,9 @@
 import type { VisibilityResult, BoardEntity } from '../src/application.js';
 import { t } from './format.js';
+import { hasTranslation } from './i18n.js';
 import { presentation, type CellStyle } from './evaluation.js';
 const label = (key: string): string =>
-  t(key) === key ? t('memoir.unsupported-entity') : t(key);
+  hasTranslation(key) ? t(key) : t('memoir.unsupported-entity');
 export function entityLabel(entity: BoardEntity): string {
   const type = entity.properties.type;
   if (entity.kind === 'memoir44.unit')

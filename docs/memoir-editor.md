@@ -114,7 +114,8 @@ are labeled as GordosHex conventions, not publisher rulings. Blocker description
 identify terrain, unit or installation and coordinate. Exact rational intervals,
 side, full evidence and simultaneous events remain in expandable sections. Raw
 semantic codes are only in explicitly labeled technical details, not normal prose.
-English strings are in `web/messages/memoir-en.ts`, ready for M3C translation.
+English and Spanish resources are in `web/messages/memoir-en.ts` and
+`memoir-es.ts`; see the [M3C language and accessibility guide](release-polish.md).
 
 ## Implementation boundary
 
@@ -141,7 +142,8 @@ maximum; both fit Artillery's uncapped inclusive maximum of 6.
 Existing limits remain 512 cells/targets, dimensions ≤64, aggregate candidates
 ≤100,000, 1000n per sightline, 16 elements/cell, 8 edge features in generic mode,
 128-character integer input and safe relative display spans. Resource failures
-retain explicit diagnostics. The full synchronous pass can still pause interaction;
+retain explicit diagnostics. The browser now yields between per-target chunks; individual queries and
+atomic rendering can still pause interaction;
 see [M3B performance](m3b-performance.md) for populated 117/468-cell measurements.
 Repeated full-board schema validation remains inside the accepted API; no speculative
 validation cache is introduced. Cooperative yielding is the smallest next UI
@@ -154,8 +156,8 @@ Screenshots: [desktop](screenshots/m3b-desktop.png), [mobile](screenshots/m3b-mo
 [populated flat](screenshots/m3b-acceptance-flat.png),
 [populated mobile](screenshots/m3b-acceptance-mobile.png).
 These are actual Chromium application captures, not substitutes for functional tests.
-Chromium desktop/mobile viewport is verified; full physical-device and broader
-browser/assistive-technology coverage remains M3C. Lakes, terrain variants, special
+The [M3C release guide](release-polish.md) records Chromium/Firefox/WebKit
+verification and remaining physical-device/assistive-technology limits. Lakes, terrain variants, special
 units, legacy rules, expansions, scenario UI, legal attacks and deployment remain
 unsupported. This is not exhaustive Memoir '44 base-game compatibility.
 

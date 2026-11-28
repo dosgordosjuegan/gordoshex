@@ -1,5 +1,8 @@
 # M3A completion report
 
+Historical milestone record. See the [M3C release guide](release-polish.md) for
+current localization, accessibility, mobile and evaluation behavior.
+
 Implemented the first interactive generic visibility calculator on
 `feature/interactive-board`. PR #5 was already merged at reviewed head
 `62fc1fef0eb88ef761f1a7fe0e382d3763415e5f`, with both CI checks successful.

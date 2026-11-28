@@ -26,6 +26,7 @@ function paintButton(
     mutate((current) => ({ ...current, mode: 'paint', brush })),
   );
   node.className = 'palette-button';
+  node.dataset.focusKey = JSON.stringify(brush);
   node.setAttribute('aria-label', label);
   node.setAttribute(
     'aria-pressed',
@@ -47,6 +48,9 @@ function paintButton(
 }
 export function syncProfileControls(state: AppState): void {
   const memoir = memoirMode(state);
+  document
+    .querySelector('a[href="#memoir-palette"]')
+    ?.toggleAttribute('hidden', !memoir);
   select('ruleset').value = state.rulesetId;
   select('mode').value = state.mode;
   select('orientation').value = state.orientation;

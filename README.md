@@ -3,12 +3,13 @@
 Freely accessible browser tools for hexagonal tabletop games, developed by **Dos Gordos Juegan**.
 
 Repository: [dosgordosjuegan/gordoshex](https://github.com/dosgordosjuegan/gordoshex).
+Channel: [Dos Gordos Juegan](https://www.youtube.com/@DosGordosJuegan).
 
-The first tool will calculate line of sight and lattice range. The first game-specific adapter supports an explicit subset of Memoir '44 refreshed 2025; see the [approved rules specification](docs/rulesets/memoir44.md) and [adapter API](docs/rulesets/memoir44-refresh2025.md). The interface will support English and Spanish, desktop and mobile browsers, and deployment to GitHub Pages. This is a focused calculator, not a general tabletop simulator.
+The first tool calculates line of sight and lattice range. The first game-specific adapter supports an explicit subset of Memoir '44 refreshed 2025; see the [approved rules specification](docs/rulesets/memoir44.md) and [adapter API](docs/rulesets/memoir44-refresh2025.md). The interface supports English and Spanish on desktop and mobile browsers. Publication is deferred to M4. This is a focused calculator, not a general tabletop simulator.
 
-## Current status: M3B Memoir '44 editor for review
+## Current status: M3C release candidate for review
 
-The accepted M1 exact geometry engine is joined by immutable board snapshots, pure board editing, axial/offset generators, three generic contact policies, independent range/LOS evaluation and a versioned scenario codec. All modules have zero runtime dependencies. The refreshed-2025 adapter adds categorical elevation, global sided boundary obstructions, exact blocker evidence and intrinsic unit range. The first browser application provides SVG board editing and exact generic visibility inspection; the supported Memoir '44 2025 subset now has its own graphical editing workspace. P1–P9 retain their approved semantics; M2A completes the underlying P10 version-1 scenario schema.
+The accepted M1 exact geometry engine is joined by immutable board snapshots, pure board editing, axial/offset generators, three generic contact policies, independent range/LOS evaluation and a versioned scenario codec. All modules have zero runtime dependencies. The refreshed-2025 adapter adds categorical elevation, global sided boundary obstructions, exact blocker evidence and intrinsic unit range. The first browser application provides SVG board editing and exact generic visibility inspection; the supported Memoir '44 2025 subset now has its own graphical editing workspace. M3C adds complete English/Spanish resources, keyboard/focus and mobile improvements, project attribution, and cancellable cooperative evaluation. P1–P9 retain their approved semantics; M2A completes the underlying P10 version-1 scenario schema.
 
 | Document                               | Contents                                                                                                |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------- |
@@ -18,7 +19,7 @@ The accepted M1 exact geometry engine is joined by immutable board snapshots, pu
 
 The documents distinguish agreed requirements, approved decisions, approval in principle, and open/deferred details. The specification's decision register owns approval status.
 
-## Planned implementation
+## Architecture
 
 TypeScript, SVG, HTML, CSS, Vite and Vitest, with minimal dependencies. Mathematical geometry will run independently of the browser and game rules. The application will require no backend, database, authentication or proprietary runtime dependencies.
 
@@ -49,14 +50,15 @@ automatically recalculate after a 150 ms debounce; **Evaluate all targets** rema
 available to refresh immediately. Drag from any cell, edge or background to pan
 (left/middle button, Space + drag, or touch); stationary clicks activate the mode. The target panel retains independent range,
 LOS, exact intervals and every blocker. Both orientations, zoom/pan, cell stacks
-and ignored shared-edge markers are supported. English is available in M3A.
+and ignored shared-edge markers are supported. English and Spanish are available. The header selector saves only the language
+preference; changing language preserves the board, results and camera.
 
 ```sh
 npm run check             # Types, all unit/property/oracle tests, lint, format, libraries
 npm run build:app         # Production browser build in browser-dist/
 npm run preview -- --port 4173
-npx playwright install chromium
-npm run test:browser      # Actual Chromium tests against the production build
+npx playwright install --with-deps chromium firefox webkit
+npm run test:browser      # Chromium suite plus EN/ES Firefox and WebKit release workflows
 npm run benchmark:app     # Reproducible whole-board evaluation and SVG measurements
 ```
 
@@ -64,7 +66,11 @@ See [application architecture, controls and limits](docs/interactive-app.md),
 [measured browser performance](docs/m3a-performance.md), and the
 [M3A completion report](docs/m3a-report.md). Generated boards/batches are limited
 to 512 cells, with a separate aggregate candidate budget and explicit failures.
-The existing `npm run benchmark` still measures standalone geometry.
+The existing `npm run benchmark` still measures standalone geometry. See the
+[M3C release guide (English / español)](docs/release-polish.md) for language,
+keyboard, touch and mobile instructions, and [responsive-evaluation measurements](docs/m3c-performance.md).
+Evaluation now yields in bounded chunks and publishes only complete current maps.
+Exact core/ruleset semantics and resource budgets are unchanged.
 
 Choose **Memoir '44 2025 · supported subset** to edit terrain, installations and
 standard Allied/Axis units. Generic and Memoir modes retain separate working
@@ -76,6 +82,15 @@ a legal attack. **Coordinate labels** can be toggled without recalculating.
 This is inspection, not attack legality or exhaustive game compatibility. See
 [Memoir editor usage](docs/memoir-editor.md), [M3B performance](docs/m3b-performance.md)
 and [M3B completion evidence](docs/m3b-report.md).
+
+### Uso en español
+
+Ejecuta `npm run dev -- --host 127.0.0.1` después de `nvm use` y `npm ci`.
+Abre la dirección local de Vite y elige **Español** en el encabezado. Selecciona
+las reglas y un observador; haz clic o toca para editar e inspeccionar, y arrastra
+para desplazar. En Memoir se requiere una unidad observadora. La inspección separa
+alcance y línea de visión; no certifica ataques legales. Consulta la
+[guía en español](docs/release-polish.md#instrucciones-rápidas-en-español).
 
 The geometry entry point is `src/index.ts`; `npm run build` produces native ESM and declarations in `dist/`.
 
